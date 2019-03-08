@@ -52,6 +52,6 @@ types.submodule ({name, ...}: {
 
           ${toString SOA}
 
-        '' + concatStringsSep "\n\n" groups';
+        '' + concatStringsSep "\n\n" groups' + "\n";
   };
 })
