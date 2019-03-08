@@ -12,46 +12,59 @@ let
   inherit (pkgs.lib) mkOption types;
 
   record = import ./record.nix { inherit pkgs; };
-  recordTypes = import ./records { inherit pkgs; };
 
+  recordTypes = import ./records { inherit pkgs; };
   recordTypes' = filterAttrs (n: v: n != "SOA") recordTypes;
+
+  subzoneOptions = name: {
+  } //
+    mapAttrs (n: t: mkOption rec {
+      type = types.listOf (record t name);
+      default = [];
+      example = [ t.example ];
+      description = "List of ${t} records for this zone/subzone";
+    }) recordTypes';
+
+  writeSubzone = zone:
+    let
+      groupToString = n:
+        concatMapStringsSep "\n" toString (zone."${n}");
+      groups = map groupToString (builtins.attrNames recordTypes');
+      groups' = filter (s: s != "") groups;
+    in
+      concatStringsSep "\n\n" groups';
 in
 
-types.submodule ({name, ...}: {
-  options = {
-    SOA = mkOption rec {
-      type = record recordTypes.SOA name;
-      example = {
-        ttl = 24 * 60 * 60;
-      } // type.example;
-      description = "SOA record";
+{
+  zone = types.submodule ({name, ...}: {
+    options = {
+      SOA = mkOption rec {
+        type = record recordTypes.SOA name;
+        example = {
+          ttl = 24 * 60 * 60;
+        } // type.example;
+        description = "SOA record";
+      };
+      __toString = mkOption {
+        readOnly = true;
+        visible = false;
+      };
+    } // subzoneOptions name;
+
+    config = {
+      __toString = zone@{SOA, ...}:
+          ''
+            $TTL 24h
+
+            $ORIGIN ${SOA.name}.
+
+            ${toString SOA}
+
+          '' + writeSubzone zone + "\n";
     };
-    __toString = mkOption {
-      readOnly = true;
-      visible = false;
-    };
-  }  // mapAttrs (n: t: mkOption rec {
-          type = types.listOf (record t name);
-          default = [];
-          example = [ t.example ];
-          description = "List of ${t} records for this zone/subzone";
-        }) recordTypes';
+  });
 
-  config = {
-    __toString = zone@{SOA, ...}:
-      let
-        groupToString = n:
-          concatMapStringsSep "\n" toString (zone."${n}");
-        groups = map groupToString (builtins.attrNames recordTypes');
-        groups' = filter (s: s != "") groups;
-      in
-        ''
-          $TTL 24h
-
-          $ORIGIN ${SOA.name}.
-
-          ${toString SOA}
-
-        '' + concatStringsSep "\n\n" groups' + "\n";
-  };
-})
+  subzone = types.submodule ({name, ...}: {
+    options = subzoneOptions name;
+  });
+}
