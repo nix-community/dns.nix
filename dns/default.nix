@@ -7,15 +7,34 @@
 { pkgs }:
 
 let
-  mkZone = name: zone:
+  inherit (pkgs) lib;
+  types = import ./types { inherit pkgs; };
+
+  evalZone = name: zone:
+    (lib.evalModules {
+      modules = [
+        { options = {
+            zones = lib.mkOption {
+              type = lib.types.attrsOf types.zone;
+              description = "DNS zones";
+            };
+          };
+          config = {
+            zones = { "${name}" = zone; };
+          };
+        }
+      ];
+    }).config.zones."${name}";
+
+  writeZone = name: zone:
     pkgs.writeTextFile {
       name = "${name}.zone";
-      text = toString zone + "\n";
+      text = toString (evalZone name zone) + "\n";
     };
 in
 
 {
-  inherit mkZone;
+  inherit evalZone writeZone;
 
-  types = import ./types { inherit pkgs; };
+  inherit types;
 }
