@@ -20,5 +20,5 @@ in
       description = "A <domain-name> which specifies a host which should be authoritative for the specified class and domain";
     };
   };
-  dataToString = {nsdname, ...}: nsdname;
+  dataToString = {nsdname, ...}: "${nsdname}.";
 }

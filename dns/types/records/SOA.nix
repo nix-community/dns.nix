@@ -59,5 +59,5 @@ in
   dataToString = data@{nameServer, adminEmail, ...}:
     let
       numbers = map toString (with data; [serial refresh retry expire minimum]);
-    in "${nameServer} ${adminEmail} (${concatStringsSep " " numbers})";
+    in "${nameServer}. ${adminEmail}. (${concatStringsSep " " numbers})";
 }
