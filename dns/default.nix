@@ -10,7 +10,7 @@ let
   mkZone = name: zone:
     pkgs.writeTextFile {
       name = "${name}.zone";
-      text = toString zone;
+      text = toString zone + "\n";
     };
 in
 

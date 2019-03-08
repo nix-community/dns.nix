@@ -7,17 +7,20 @@
 { pkgs }:
 
 let
+  inherit (builtins) filter map;
+  inherit (pkgs.lib) concatMapStringsSep concatStringsSep filterAttrs mapAttrs;
   inherit (pkgs.lib) mkOption types;
 
   record = import ./record.nix { inherit pkgs; };
   recordTypes = import ./records { inherit pkgs; };
 
+  recordTypes' = filterAttrs (n: v: n != "SOA") recordTypes;
 in
 
 types.submodule ({name, ...}: {
   options = {
-    soa = mkOption rec {
-      type = record recordTypes.SOA;
+    SOA = mkOption rec {
+      type = record recordTypes.SOA name;
       example = {
         ttl = 24 * 60 * 60;
       } // type.example;
@@ -27,19 +30,28 @@ types.submodule ({name, ...}: {
       readOnly = true;
       visible = false;
     };
-  };
+  }  // mapAttrs (n: t: mkOption rec {
+          type = types.listOf (record t name);
+          default = [];
+          example = [ t.example ];
+          description = "List of ${t} records for this zone/subzone";
+        }) recordTypes';
 
   config = {
-    soa.name = name;
-    soa.class = "IN";
-    __toString = { soa, ... }:
-      ''
-        $TTL 24h
+    __toString = zone@{SOA, ...}:
+      let
+        groupToString = n:
+          concatMapStringsSep "\n" toString (zone."${n}");
+        groups = map groupToString (builtins.attrNames recordTypes');
+        groups' = filter (s: s != "") groups;
+      in
+        ''
+          $TTL 24h
 
-        $ORIGIN ${soa.name}.
+          $ORIGIN ${SOA.name}.
 
-        ${toString soa}
-      '';
+          ${toString SOA}
 
+        '' + concatStringsSep "\n\n" groups';
   };
 })

@@ -13,10 +13,11 @@ let
   recordTypes = import ./records { inherit pkgs; };
 in
 
-recordType: types.submodule {
+recordType: name: types.submodule {
   options = {
     name = mkOption {
       type = types.str;
+      default = name;
       example = "example.com";
       description = "Name of the node to which this resource record pertains";
     };
