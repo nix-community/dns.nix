@@ -7,8 +7,9 @@
 { pkgs }:
 
 let
-  inherit (builtins) filter map;
-  inherit (pkgs.lib) concatMapStringsSep concatStringsSep filterAttrs mapAttrs;
+  inherit (builtins) filter hasAttr map;
+  inherit (pkgs.lib) concatMapStringsSep concatStringsSep filterAttrs id mapAttrs
+                     optionalString;
   inherit (pkgs.lib) mkOption types;
 
   record = import ./record.nix { inherit pkgs; };
@@ -17,6 +18,29 @@ let
   recordTypes' = filterAttrs (n: v: n != "SOA") recordTypes;
 
   subzoneOptions = name: {
+    subdomains = mkOption {
+      type = types.attrsOf subzone;
+      default = {};
+      example = {
+        www = {
+          A = [ { address = "1.1.1.1"; } ];
+        };
+        staging = {
+          A = [ { address = "1.0.0.1"; } ];
+        };
+      };
+      description = "Records for subdomains of the domain";
+      apply =  # Fixup names of subrecords. Don’t ask!
+        let
+          fixupSubzones =
+            mapAttrs (_dn: if _dn != "_module"  then fixupSubzone else id);
+          fixupSubzone =
+            mapAttrs (_rt: if hasAttr _rt recordTypes' then fixupRecords else id);
+          fixupRecords =
+            map (r: r // { name = "${r.name}.${name}"; });
+        in
+          fixupSubzones;
+    };
   } //
     mapAttrs (n: t: mkOption rec {
       type = types.listOf (record t name);
@@ -25,17 +49,24 @@ let
       description = "List of ${t} records for this zone/subzone";
     }) recordTypes';
 
+  subzone = types.submodule ({name, ...}: {
+    options = subzoneOptions name;
+  });
+
   writeSubzone = zone:
     let
       groupToString = n:
         concatMapStringsSep "\n" toString (zone."${n}");
       groups = map groupToString (builtins.attrNames recordTypes');
       groups' = filter (s: s != "") groups;
+
+      sub = concatMapStringsSep "\n\n" writeSubzone (builtins.attrValues zone.subdomains);
     in
-      concatStringsSep "\n\n" groups';
+      concatStringsSep "\n\n" groups'
+      + optionalString (sub != "") ("\n\n" + sub);
 in
 
-{
+rec {
   zone = types.submodule ({name, ...}: {
     options = {
       SOA = mkOption rec {
@@ -54,17 +85,11 @@ in
     config = {
       __toString = zone@{SOA, ...}:
           ''
-            $TTL 24h
-
-            $ORIGIN ${SOA.name}.
-
             ${toString SOA}
 
           '' + writeSubzone zone + "\n";
     };
   });
 
-  subzone = types.submodule ({name, ...}: {
-    options = subzoneOptions name;
-  });
+  inherit subzone;
 }

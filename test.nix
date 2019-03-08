@@ -38,6 +38,15 @@ let
         value = "mailto:admin@example.com";
       }
     ];
+
+    subdomains = {
+      www = {
+        A = [ { address = "1.1.1.1"; } ];
+      };
+      staging = {
+        A = [ { address = "1.0.0.1"; } ];
+      };
+    };
   };
 in
 
