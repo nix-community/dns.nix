@@ -8,7 +8,9 @@
 
 let
   inherit (pkgs) lib;
+
   types = import ./types { inherit pkgs; };
+  combinators = import ./combinators.nix { inherit pkgs; };
 
   evalZone = name: zone:
     (lib.evalModules {
@@ -37,4 +39,6 @@ in
   inherit evalZone writeZone;
 
   inherit types;
+
+  inherit combinators;
 }

@@ -1,0 +1,42 @@
+#
+# © 2019 Kirill Elagin <kirelagin@gmail.com>
+#
+# SPDX-License-Identifier: MIT
+#
+
+let
+  dns = import ./. { };
+
+  testZone = with dns.combinators; {
+    SOA = {
+      nameServer = "ns.test.com";
+      adminEmail = "admin@test.com";
+      serial = 2019030800;
+    };
+
+    NS = map ns [
+      "ns.test.com"
+      "ns2.test.com"
+    ];
+
+    A = [
+      { address = "203.0.113.1"; ttl = 60 * 60; }
+      (a "203.0.113.2")
+      (ttl (60 * 60) (a "203.0.113.3"))
+    ];
+
+    CAA = letsEncrypt "admin@example.com";
+
+    subdomains = {
+      www = {
+        A = map a [ "203.0.113.4" ];
+      };
+      staging = delegateTo [
+        "ns1.another.com"
+        "ns2.another.com"
+      ];
+    };
+  };
+in
+
+dns.writeZone "test.com" testZone

@@ -12,4 +12,5 @@ in
 
 {
   inherit (dns) evalZone writeZone;
-}
+  inherit (dns) combinators;
+} // dns.combinators
