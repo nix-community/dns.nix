@@ -13,4 +13,6 @@ in
 {
   inherit (dns) evalZone writeZone;
   inherit (dns) combinators;
+
+  toString = name: zone: toString (dns.evalZone name zone);
 } // dns.combinators
