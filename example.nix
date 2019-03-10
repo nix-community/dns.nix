@@ -25,6 +25,10 @@ let
       (ttl (60 * 60) (a "203.0.113.3"))
     ];
 
+    AAAA = [
+      (aaaa "4321:0:1:2:3:4:567:89ab")
+    ];
+
     CAA = letsEncrypt "admin@example.com";
 
     subdomains = {

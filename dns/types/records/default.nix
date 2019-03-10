@@ -11,6 +11,7 @@ let
 
   types = [
     "A"
+    "AAAA"
     "CAA"
     "CNAME"
     "NS"

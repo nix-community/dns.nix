@@ -33,6 +33,10 @@ with dns.combinators; {
     (ttl (60 * 60) (a "203.0.113.4"))  # Equivalent to the second one
   ];
 
+  AAAA = [
+    (aaaa "4321:0:1:2:3:4:567:89ab")
+  ];
+
   CAA = letsEncrypt "admin@example.com";  # Common template combinators included
 
   subdomains = {

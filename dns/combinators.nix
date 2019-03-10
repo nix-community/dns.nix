@@ -18,6 +18,7 @@ rec {
 #
 
 a = address: { inherit address; };
+aaaa = address: { inherit address; };
 cname = cname: { inherit cname; };
 ns = nsdname: { inherit nsdname; };
 txt = data: { inherit data; };
