@@ -14,6 +14,7 @@ let
     "AAAA"
     "CAA"
     "CNAME"
+    "MX"
     "NS"
     "SOA"
     "TXT"

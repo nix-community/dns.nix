@@ -39,6 +39,8 @@ with dns.combinators; {
 
   CAA = letsEncrypt "admin@example.com";  # Common template combinators included
 
+  MX = mx.google;  # G Suite mail servers;
+
   TXT = [
     (with spf; strict [google])  # SPF: only allow gmail
   ];

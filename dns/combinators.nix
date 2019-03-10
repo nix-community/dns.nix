@@ -40,6 +40,18 @@ delegateTo = nameservers: {
   NS = map ns nameservers;
 };
 
+mx = rec {
+  mx = preference: exchange: { inherit preference exchange; };
+
+  google = map (ttl 3600) [
+    (mx 1  "aspmx.l.google.com.")
+    (mx 5  "alt1.aspmx.l.google.com.")
+    (mx 5  "alt2.aspmx.l.google.com.")
+    (mx 10 "alt3.aspmx.l.google.com.")
+    (mx 10 "alt4.aspmx.l.google.com.")
+  ];
+};
+
 letsEncrypt = email: [
   { issuerCritical = false;
     tag = "issue";
