@@ -12,7 +12,7 @@ let
 in
 
 {
-  rtype = "AAAAA";
+  rtype = "AAAA";
   options = {
     address = mkOption {
       type = types.str;
