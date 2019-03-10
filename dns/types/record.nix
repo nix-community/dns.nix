@@ -8,7 +8,7 @@
 
 let
   inherit (pkgs) lib;
-  inherit (lib) mkOption types;
+  inherit (lib) const mkOption types;
 
   recordTypes = import ./records { inherit pkgs; };
 in
@@ -52,6 +52,8 @@ recordType: name: types.submodule {
     rtype  = recordType.rtype;
     _rtype = recordType;
     __toString = data@{name, rtype, class, ttl, _rtype, ...}:
-      "${name}. ${toString ttl} ${class} ${rtype} ${_rtype.dataToString data}";
+      let
+        name' = _rtype.nameFixup or (const name) data;
+      in "${name'}. ${toString ttl} ${class} ${rtype} ${_rtype.dataToString data}";
   };
 }

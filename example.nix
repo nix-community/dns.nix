@@ -37,6 +37,14 @@ let
 
     CAA = letsEncrypt "admin@example.com";
 
+    SRV = [
+      { service = "sip";
+        proto = "tcp";
+        port = 5060;
+        target = "sip.example.com";
+      }
+    ];
+
     subdomains = {
       www = {
         A = map a [ "203.0.113.4" ];

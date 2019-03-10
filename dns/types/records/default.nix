@@ -17,6 +17,7 @@ let
     "MX"
     "NS"
     "SOA"
+    "SRV"
     "TXT"
   ];
 
