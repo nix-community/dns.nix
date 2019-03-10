@@ -19,7 +19,7 @@ let
 
   subzoneOptions = name: {
     subdomains = mkOption {
-      type = types.attrsOf subzone;
+      type = types.attrsOf (subzone name);
       default = {};
       example = {
         www = {
@@ -30,16 +30,6 @@ let
         };
       };
       description = "Records for subdomains of the domain";
-      apply =  # Fixup names of subrecords. Don’t ask!
-        let
-          fixupSubzones =
-            mapAttrs (_dn: if _dn != "_module"  then fixupSubzone else id);
-          fixupSubzone =
-            mapAttrs (_rt: if hasAttr _rt recordTypes' then fixupRecords else id);
-          fixupRecords =
-            map (r: r // { name = "${r.name}.${name}"; });
-        in
-          fixupSubzones;
     };
   } //
     mapAttrs (n: t: mkOption rec {
@@ -49,9 +39,10 @@ let
       description = "List of ${t} records for this zone/subzone";
     }) recordTypes';
 
-  subzone = types.submodule ({name, ...}: {
-    options = subzoneOptions name;
-  });
+  subzone = pname:
+    types.submodule ({name, ...}: {
+      options = subzoneOptions "${name}.${pname}";
+    });
 
   writeSubzone = zone:
     let

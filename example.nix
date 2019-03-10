@@ -53,6 +53,7 @@ let
         "ns1.another.com."
         "ns2.another.com."
       ];
+      foo.subdomains.www.CNAME = map cname [ "foo.test.com" ];
     };
   };
 in

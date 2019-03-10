@@ -46,9 +46,8 @@ with dns.combinators; {
   ];
 
   subdomains = {
-    www = {
-      A = [ (a "203.0.114.1") ];
-    };
+    www.A = [ (a "203.0.114.1") ];
+
     staging = delegateTo [  # Another shortcut combinator
       "ns1.another.com."
       "ns2.another.com."
