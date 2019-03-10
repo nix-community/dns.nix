@@ -39,6 +39,10 @@ with dns.combinators; {
 
   CAA = letsEncrypt "admin@example.com";  # Common template combinators included
 
+  TXT = [
+    (with spf; strict [google])  # SPF: only allow gmail
+  ];
+
   subdomains = {
     www = {
       A = [ (a "203.0.114.1") ];

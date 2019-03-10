@@ -29,6 +29,10 @@ let
       (aaaa "4321:0:1:2:3:4:567:89ab")
     ];
 
+    TXT = [
+      (with spf; strict ["a:mail.example.com" google])
+    ];
+
     CAA = letsEncrypt "admin@example.com";
 
     subdomains = {

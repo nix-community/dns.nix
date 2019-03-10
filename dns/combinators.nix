@@ -8,6 +8,7 @@
 
 let
   inherit (builtins) map;
+  inherit (pkgs) lib;
 
 in
 
@@ -53,5 +54,16 @@ letsEncrypt = email: [
     value = "mailto:${email}";
   }
 ];
+
+spf =
+  let
+    toSpf = rs:
+      txt (lib.concatStringsSep " " (["v=spf1"] ++ rs));
+  in {
+    soft = rs: toSpf (rs ++ ["~all"]);
+    strict = rs: toSpf (rs ++ ["-all"]);
+
+    google = "include:_spf.google.com";
+  };
 
 }
