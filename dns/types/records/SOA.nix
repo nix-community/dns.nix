@@ -7,7 +7,7 @@
 { pkgs }:
 
 let
-  inherit (pkgs.lib) concatStringsSep replaceStrings;
+  inherit (pkgs.lib) concatStringsSep removeSuffix replaceStrings;
   inherit (pkgs.lib) mkOption types;
 
 in
@@ -18,13 +18,13 @@ in
     nameServer = mkOption {
       type = types.str;
       example = "ns1.example.com";
-      description = "The <domain-name> of the name server that was the original or primary source of data for this zone";
+      description = "The <domain-name> of the name server that was the original or primary source of data for this zone. Don't forget the dot at the end!";
     };
     adminEmail = mkOption {
       type = types.str;
       example = "admin@example.com";
-      description = "An email address of the person responsible for this zone. (Note: in traditional zone files you are supposed to put a dot instead of `@` in your address; you can use `@` with this module and it is recommended to do so.)";
-      apply = replaceStrings ["@"] ["."];
+      description = "An email address of the person responsible for this zone. (Note: in traditional zone files you are supposed to put a dot instead of `@` in your address; you can use `@` with this module and it is recommended to do so. Also don't put the dot at the end!)";
+      apply = s: replaceStrings ["@"] ["."] (removeSuffix "." s);
     };
     serial = mkOption {
       type = types.ints.unsigned;  # TODO: u32
@@ -59,5 +59,5 @@ in
   dataToString = data@{nameServer, adminEmail, ...}:
     let
       numbers = map toString (with data; [serial refresh retry expire minimum]);
-    in "${nameServer}. ${adminEmail}. (${concatStringsSep " " numbers})";
+    in "${nameServer} ${adminEmail}. (${concatStringsSep " " numbers})";
 }

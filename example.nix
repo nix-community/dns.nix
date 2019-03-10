@@ -9,14 +9,14 @@ let
 
   testZone = with dns.combinators; {
     SOA = {
-      nameServer = "ns.test.com";
+      nameServer = "ns.test.com.";
       adminEmail = "admin@test.com";
       serial = 2019030800;
     };
 
     NS = map ns [
-      "ns.test.com"
-      "ns2.test.com"
+      "ns.test.com."
+      "ns2.test.com."
     ];
 
     A = [
@@ -42,8 +42,8 @@ let
         A = map a [ "203.0.113.4" ];
       };
       staging = delegateTo [
-        "ns1.another.com"
-        "ns2.another.com"
+        "ns1.another.com."
+        "ns2.another.com."
       ];
     };
   };

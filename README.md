@@ -15,15 +15,15 @@ Example
 ```nix
 with dns.combinators; {
   SOA = {  # Human readable names for fields
-    nameServer = "ns.test.com";
-    adminEmail = "admin@test.com";  # Email address with real `@`!
+    nameServer = "ns.test.com.";
+    adminEmail = "admin@test.com";  # Email address with a real `@`!
     serial = 2019030800;
     # Sane defaults for the remaining ones
   };
 
   NS = map ns [  # Why not `map` over your records?
-    "ns.test.com"
-    "ns2.test.com"
+    "ns.test.com."
+    "ns2.test.com."
   ];
 
   A = [
@@ -50,8 +50,8 @@ with dns.combinators; {
       A = [ (a "203.0.114.1") ];
     };
     staging = delegateTo [  # Another shortcut combinator
-      "ns1.another.com"
-      "ns2.another.com"
+      "ns1.another.com."
+      "ns2.another.com."
     ];
   };
 }
