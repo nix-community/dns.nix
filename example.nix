@@ -14,19 +14,19 @@ let
       serial = 2019030800;
     };
 
-    NS = map ns [
+    NS = [
       "ns.test.com."
       "ns2.test.com."
     ];
 
     A = [
       { address = "203.0.113.1"; ttl = 60 * 60; }
-      (a "203.0.113.2")
+      "203.0.113.2"
       (ttl (60 * 60) (a "203.0.113.3"))
     ];
 
     AAAA = [
-      (aaaa "4321:0:1:2:3:4:567:89ab")
+      "4321:0:1:2:3:4:567:89ab"
     ];
 
     MX = mx.google;
@@ -46,14 +46,13 @@ let
     ];
 
     subdomains = {
-      www = {
-        A = map a [ "203.0.113.4" ];
-      };
+      www.A = [ "203.0.113.4" ];
+
       staging = delegateTo [
         "ns1.another.com."
         "ns2.another.com."
       ];
-      foo.subdomains.www.CNAME = map cname [ "foo.test.com" ];
+      foo.subdomains.www.CNAME = [ "foo.test.com." ];
     };
   };
 in

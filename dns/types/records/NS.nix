@@ -21,4 +21,5 @@ in
     };
   };
   dataToString = {nsdname, ...}: "${nsdname}";
+  fromString = nsdname: { inherit nsdname; };
 }

@@ -7,19 +7,19 @@
 { pkgs }:
 
 let
-  inherit (builtins) filter hasAttr map removeAttrs;
-  inherit (pkgs.lib) concatMapStringsSep concatStringsSep id mapAttrs
-                     optionalString;
+  inherit (builtins) attrValues filter map removeAttrs;
+  inherit (pkgs.lib) concatMapStringsSep concatStringsSep mapAttrs
+                     mapAttrsToList optionalString;
   inherit (pkgs.lib) mkOption types;
 
-  record = import ./record.nix { inherit pkgs; };
+  inherit (import ./record.nix { inherit pkgs; }) recordType writeRecord;
 
-  recordTypes = import ./records { inherit pkgs; };
-  recordTypes' = removeAttrs recordTypes ["SOA"];
+  rsubtypes = import ./records { inherit pkgs; };
+  rsubtypes' = removeAttrs rsubtypes ["SOA"];
 
-  subzoneOptions = name: {
+  subzoneOptions = {
     subdomains = mkOption {
-      type = types.attrsOf (subzone name);
+      type = types.attrsOf subzone;
       default = {};
       example = {
         www = {
@@ -33,35 +33,33 @@ let
     };
   } //
     mapAttrs (n: t: mkOption rec {
-      type = types.listOf (record t name);
+      type = types.listOf (recordType t);
       default = [];
       example = [ t.example ];
       description = "List of ${t} records for this zone/subzone";
-    }) recordTypes';
+    }) rsubtypes';
 
-  subzone = pname:
-    types.submodule ({name, ...}: {
-      options = subzoneOptions "${name}.${pname}";
-    });
+  subzone = types.submodule {
+      options = subzoneOptions;
+    };
 
-  writeSubzone = zone:
+  writeSubzone = name: zone:
     let
-      groupToString = n:
-        concatMapStringsSep "\n" toString (zone."${n}");
-      groups = map groupToString (builtins.attrNames recordTypes');
+      groupToString = subt:
+        concatMapStringsSep "\n" (writeRecord name subt) (zone."${subt.rtype}");
+      groups = map groupToString (attrValues rsubtypes');
       groups' = filter (s: s != "") groups;
 
-      sub = concatMapStringsSep "\n\n" writeSubzone (builtins.attrValues zone.subdomains);
+      writeSubzone' = subname: writeSubzone "${subname}.${name}";
+      sub = concatStringsSep "\n\n" (mapAttrsToList writeSubzone' zone.subdomains);
     in
       concatStringsSep "\n\n" groups'
       + optionalString (sub != "") ("\n\n" + sub);
-in
 
-rec {
   zone = types.submodule ({name, ...}: {
     options = {
       SOA = mkOption rec {
-        type = record recordTypes.SOA name;
+        type = recordType rsubtypes.SOA;
         example = {
           ttl = 24 * 60 * 60;
         } // type.example;
@@ -71,16 +69,20 @@ rec {
         readOnly = true;
         visible = false;
       };
-    } // subzoneOptions name;
+    } // subzoneOptions;
 
     config = {
       __toString = zone@{SOA, ...}:
           ''
-            ${toString SOA}
+            ${writeRecord name rsubtypes.SOA SOA}
 
-          '' + writeSubzone zone + "\n";
+          '' + writeSubzone name zone + "\n";
     };
   });
 
+in
+
+{
+  inherit zone;
   inherit subzone;
 }

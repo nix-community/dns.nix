@@ -21,4 +21,5 @@ in
     };
   };
   dataToString = {data, ...}: ''"${data}"'';
+  fromString = data: { inherit data; };
 }

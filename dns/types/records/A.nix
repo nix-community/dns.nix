@@ -21,4 +21,5 @@ in
     };
   };
   dataToString = {address, ...}: address;
+  fromString = address: { inherit address; };
 }

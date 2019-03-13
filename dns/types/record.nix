@@ -8,52 +8,48 @@
 
 let
   inherit (pkgs) lib;
-  inherit (lib) const mkOption types;
+  inherit (lib) const isString mkOption types;
 
-  recordTypes = import ./records { inherit pkgs; };
+  defaults = {
+    class = "IN";
+    ttl = 24 * 60 * 60;
+  };
+
+  recordType = rsubt:
+    let
+      submodule = types.submodule {
+        options = {
+          class = mkOption {
+            type = types.enum ["IN"];
+            default = defaults.class;
+            example = "IN";
+            description = "Resource record class. Only IN is supported";
+          };
+          ttl = mkOption {
+            type = types.ints.unsigned;  # TODO: u32
+            default = defaults.ttl;
+            example = 300;
+            description = "Record caching duration (in seconds)";
+          };
+        } // rsubt.options;
+      };
+    in
+      (if rsubt ? fromString then types.either types.str else lib.id) submodule;
+
+  writeRecord = name: rsubt: data:
+    let
+      data' =
+        if isString data && rsubt ? fromString
+        then defaults // rsubt.fromString data
+        else data;
+      name' = rsubt.nameFixup or (n: _: n) name data';
+      rtype = rsubt.rtype;
+    in with data';
+      "${name'}. ${toString ttl} ${class} ${rtype} ${rsubt.dataToString data'}";
+
 in
 
-recordType: name: types.submodule {
-  options = {
-    name = mkOption {
-      type = types.str;
-      default = name;
-      example = "example.com";
-      description = "Name of the node to which this resource record pertains";
-    };
-    rtype = mkOption {
-      type = types.enum (lib.mapAttrsToList (n: v: v.rtype) recordTypes);
-      readOnly = true;
-      visible = false;
-      description = "Type of the record. Do not set this option yourself!";
-    };
-    _rtype = mkOption {
-      readOnly = true;
-      visible = false;
-    };
-    class = mkOption {
-      type = types.enum ["IN"];
-      default = "IN";
-      example = "IN";
-      description = "Resource record class. Only IN is supported";
-    };
-    ttl = mkOption {
-      type = types.ints.unsigned;  # TODO: u32
-      default = 24 * 60 * 60;
-      example = 300;
-      description = "Record caching duration (in seconds)";
-    };
-    __toString = mkOption {
-      readOnly = true;
-      visible = false;
-    };
-  } // recordType.options;
-  config = {
-    rtype  = recordType.rtype;
-    _rtype = recordType;
-    __toString = data@{name, rtype, class, ttl, _rtype, ...}:
-      let
-        name' = _rtype.nameFixup or (const name) data;
-      in "${name'}. ${toString ttl} ${class} ${rtype} ${_rtype.dataToString data}";
-  };
+{
+  inherit recordType;
+  inherit writeRecord;
 }

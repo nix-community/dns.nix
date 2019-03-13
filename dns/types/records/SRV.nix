@@ -49,6 +49,6 @@ in
   };
   dataToString = data: with data;
     "${toString priority} ${toString weight} ${toString port} ${target}";
-  nameFixup = self:
-    "_${self.service}._${self.proto}.${self.name}";
+  nameFixup = name: self:
+    "_${self.service}._${self.proto}.${name}";
 }
