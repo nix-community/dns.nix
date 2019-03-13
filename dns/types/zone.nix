@@ -7,15 +7,15 @@
 { pkgs }:
 
 let
-  inherit (builtins) filter hasAttr map;
-  inherit (pkgs.lib) concatMapStringsSep concatStringsSep filterAttrs id mapAttrs
+  inherit (builtins) filter hasAttr map removeAttrs;
+  inherit (pkgs.lib) concatMapStringsSep concatStringsSep id mapAttrs
                      optionalString;
   inherit (pkgs.lib) mkOption types;
 
   record = import ./record.nix { inherit pkgs; };
 
   recordTypes = import ./records { inherit pkgs; };
-  recordTypes' = filterAttrs (n: v: n != "SOA") recordTypes;
+  recordTypes' = removeAttrs recordTypes ["SOA"];
 
   subzoneOptions = name: {
     subdomains = mkOption {
