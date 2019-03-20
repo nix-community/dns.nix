@@ -67,8 +67,9 @@ Why?
 * DNS zone syntax is crazy. Nix is nice and structured.
 * Full power of a Turing-complete functional language
   (`let`, `if`, `map` and other things you are used to).
-* Strong typing provded by the NixOS module system.
 * All kinds of shortcuts and useful combinators.
+* Strong typing provded by the NixOS module system.
+* Modularity: records defined in different modules get magically merged.
 
 
 Use
