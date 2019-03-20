@@ -45,13 +45,17 @@ let
       }
     ];
 
-    subdomains = {
+    subdomains = rec {
       www.A = [ "203.0.113.4" ];
+      www2 = host "203.0.113.5" "4321:0:1:2:3:4:567:89bb";
+      www3 = host "203.0.113.6" null;
+      www4 = www3;
 
       staging = delegateTo [
         "ns1.another.com."
         "ns2.another.com."
       ];
+
       foo.subdomains.www.CNAME = [ "foo.test.com." ];
     };
   };

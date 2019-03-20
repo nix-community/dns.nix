@@ -36,6 +36,10 @@ ttl = ttl: record: record // { inherit ttl; };
 # Templates/shortcuts
 #
 
+host = ipv4: ipv6:
+  lib.optionalAttrs (ipv4 != null) { A = [ipv4]; } //
+  lib.optionalAttrs (ipv6 != null) { AAAA = [ipv6]; };
+
 delegateTo = nameservers: {
   NS = map ns nameservers;
 };
