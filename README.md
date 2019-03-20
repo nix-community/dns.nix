@@ -92,8 +92,8 @@ services.nsd = {
   zones =
     let
       dns = import (builtins.fetchTarball {
-        url = "https://github.com/kirelagin/nix-dns/archive/v0.3.tar.gz";
-        sha256 = "0h98ql4ppmprjjn10a06mpxw5fpf60gwigv3kyigdpnkfixz45qn";
+        url = "https://github.com/kirelagin/nix-dns/archive/v0.3.1.tar.gz";
+        sha256 = "1ykmx6b7al1sh397spnpqis7c9bp0yfmgxxp3v3j7qq45fa5fs09";
       });
     in {
       "example.com" = {
