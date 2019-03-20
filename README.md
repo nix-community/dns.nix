@@ -3,16 +3,18 @@ _Nix DSL for defining DNS zones_
 nix-dns
 ========
 
-This repository provies:
+This repository provides:
 
-1. NixOS-style module definitions that describe DNS zones.
-2. A DSL to make building DNS zones easier.
+1. NixOS-style module definitions that describe DNS zones and records in them
+2. A DSL that simplifies describing your DNS zones
 
 
-Example
---------
+Example of a zone
+------------------
 
 ```nix
+# dns = import path/to/nix-dns;
+
 with dns.combinators; {
   SOA = {  # Human readable names for fields
     nameServer = "ns.test.com.";
@@ -56,5 +58,107 @@ with dns.combinators; {
 }
 ```
 
-You will find an actual zone definition in `example.nix` and you can build it
-with `nix-build example.nix`.
+You can build an example zone in `example.nix` by running `nix-build example.nix`.
+
+
+Use
+----
+
+### In your NixOS configuration
+
+_There is a chance that in the future we will either integrate this into
+existing NixOS modules for different DNS servers, or will provide a separate
+NixOS module that will configure DNS servers for you._
+
+This example assumes `nsd`, but it should be pretty much the same for other daemons.
+
+```nix
+# /etc/nixos/configuration.nix
+
+{
+
+services.nsd = {
+  enable = true;
+  zones =
+    let
+      dns = import (builtins.fetchTarball {
+        url = "https://github.com/kirelagin/nix-dns/archive/v0.3.tar.gz";
+        sha256 = "0h98ql4ppmprjjn10a06mpxw5fpf60gwigv3kyigdpnkfixz45qn";
+      });
+    in {
+      "example.com" = {
+        # provideXFR = [ ... ];
+        # notify = [ ... ];
+        data = dns.toString "example.com" (import ./dns/example.com { inherit dns; });
+      };
+    };
+};
+
+}
+```
+
+```nix
+# /etc/nixos/dns/example.com
+
+{ dns }:
+
+with dns.combinators;
+
+{
+  SOA = {
+    nameServer = "ns1";
+    adminEmail = "admin@example.com";
+    serial = 2019030800;
+  };
+
+  NS = [
+    "ns1.example.com."
+    "ns2.example.com."
+  ];
+
+  A = [ "203.0.113.1" ];
+  AAAA = [ "4321:0:1:2:3:4:567:89ab" ];
+
+  subdomains = rec {
+    foobar = host "203.0.113.2" "4321:0:1:2:3:4:567:89bb";
+
+    ns1 = foobar;
+    ns2 = host "203.0.113.3" "4321:0:1:2:3:4:567:89cc";
+  };
+}
+```
+
+### In modules you develop
+
+`dns/default.nix` exports the `types` attribute, which contains DNS-related
+types to be used in the NixOS module system. Using them you can define
+an option in your module such as this one:
+
+```nix
+# dns = import path/to/nix-dns/dns { inherit pkgs; };
+
+{
+
+yourModule = {
+  options = {
+    # <...>
+
+    zones = lib.mkOption {
+      type = lib.types.attrsOf dns.types.zone;
+      description = "DNS zones";
+    };
+  };
+
+  config = {
+    # You can call `toString` on a zone from the `zones` attrset and get
+    # a string suitable, for example, for writing with `writeTextFile`.
+  };
+};
+
+}
+```
+
+As another example, take a look at the `evalZone` function in `dns/default.nix`,
+which takes a name for a zone and a zone definition, defines a “fake” module
+similar to the one above, and then evaluates it. `writeZone` is a helper function
+that additionally calls `toString` and writes the resulting string to a file.
