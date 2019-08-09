@@ -1,8 +1,6 @@
-#
-# © 2019 Kirill Elagin <kirelagin@gmail.com>
+# SPDX-FileCopyrightText: 2019 Kirill Elagin <kirelagin@gmail.com>
 #
 # SPDX-License-Identifier: MIT
-#
 
 { pkgs ? import <nixpkgs> {} }:
 
