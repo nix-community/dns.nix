@@ -19,6 +19,7 @@ let
     "SOA"
     "SRV"
     "TXT"
+    "PTR"
   ];
 
 in
