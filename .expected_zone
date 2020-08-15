@@ -1,0 +1,41 @@
+test.com. 86400 IN SOA ns.test.com. admin.test.com. (2019030800 86400 600 864000 60)
+
+test.com. 3600 IN A 203.0.113.1
+test.com. 86400 IN A 203.0.113.2
+test.com. 3600 IN A 203.0.113.3
+
+test.com. 86400 IN AAAA 4321:0:1:2:3:4:567:89ab
+
+test.com. 86400 IN CAA 0 issue "letsencrypt.org"
+test.com. 86400 IN CAA 0 issuewild ";"
+test.com. 86400 IN CAA 0 iodef "mailto:admin@example.com"
+
+test.com. 3600 IN MX 1 aspmx.l.google.com.
+test.com. 3600 IN MX 5 alt1.aspmx.l.google.com.
+test.com. 3600 IN MX 5 alt2.aspmx.l.google.com.
+test.com. 3600 IN MX 10 alt3.aspmx.l.google.com.
+test.com. 3600 IN MX 10 alt4.aspmx.l.google.com.
+
+test.com. 86400 IN NS ns.test.com.
+test.com. 86400 IN NS ns2.test.com.
+
+_sip._tcp.test.com. 86400 IN SRV 0 100 5060 sip.example.com
+
+test.com. 86400 IN TXT "v=spf1 a:mail.example.com include:_spf.google.com -all"
+
+
+
+www.foo.test.com. 86400 IN CNAME foo.test.com.
+
+staging.test.com. 86400 IN NS ns1.another.com.
+staging.test.com. 86400 IN NS ns2.another.com.
+
+www.test.com. 86400 IN A 203.0.113.4
+
+www2.test.com. 86400 IN A 203.0.113.5
+
+www2.test.com. 86400 IN AAAA 4321:0:1:2:3:4:567:89bb
+
+www3.test.com. 86400 IN A 203.0.113.6
+
+www4.test.com. 86400 IN A 203.0.113.6

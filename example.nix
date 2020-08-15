@@ -4,9 +4,9 @@
 # SPDX-License-Identifier: MIT
 #
 
-let
-  dns = import ./. { };
+{ dns ? import ./. { } }:
 
+let
   testZone = with dns.combinators; {
     SOA = {
       nameServer = "ns.test.com.";
