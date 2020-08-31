@@ -82,4 +82,14 @@ spf =
     google = "include:_spf.google.com";
   };
 
+dmarc = {
+  postmarkapp = rua: {
+    p = "none";
+    pct = 100;
+    inherit rua;
+    sp = "none";
+    aspf = "relaxed";
+  };
+};
+
 }

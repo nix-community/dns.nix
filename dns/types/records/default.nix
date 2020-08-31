@@ -19,6 +19,9 @@ let
     "SOA"
     "SRV"
     "TXT"
+
+    # Pseudo types
+    "DMARC"
   ];
 
 in
