@@ -72,8 +72,55 @@ Why?
 * Modularity: records defined in different modules get magically merged.
 
 
-Use
-----
+## Use
+
+### Importing
+
+There are two ways to import `nix-dns`.
+
+#### As a flake (new way)
+
+Add it as an input to your flake:
+
+```nix
+# flake.nix
+
+{
+  inputs = {
+    # ...
+
+    dns = {
+      url = "github:kirelagin/nix-dns";
+      inputs.nixpkgs.follows = "nixpkgs";  # (optionally)
+    };
+  };
+
+  outputs = { self, nixpkgs, dns }: {
+    # All functions from `nix-dns` are available in `dns.lib`.
+    # ...
+  };
+}
+```
+
+All examples below assume the old way of importing, but they should work with
+just one change: replace `dns` with `dns.lib` everywhere.
+
+#### Importing directly (old way)
+
+Always get the latest version from GitHub:
+
+```nix
+let
+  dns = import (builtins.fetchTarball "https://github.com/kirelagin/nix-dns/archive/master.zip");
+in {
+  # ...
+}
+```
+
+To make your setup more reliable, you should pin the version used by specifying
+a commit hash or using a submodule. This is all a little clumsy and nowadays it
+is probably best to simply switch to flakes.
+
 
 ### In your NixOS configuration
 
