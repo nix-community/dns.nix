@@ -45,9 +45,9 @@ let
 
   writeSubzone = name: zone:
     let
-      groupToString = subt:
-        concatMapStringsSep "\n" (writeRecord name subt) (zone."${subt.rtype}");
-      groups = map groupToString (attrValues rsubtypes');
+      groupToString = pseudo: subt:
+        concatMapStringsSep "\n" (writeRecord name subt) (zone."${pseudo}");
+      groups = mapAttrsToList groupToString rsubtypes';
       groups' = filter (s: s != "") groups;
 
       writeSubzone' = subname: writeSubzone "${subname}.${name}";
