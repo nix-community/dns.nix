@@ -21,6 +21,7 @@ let
     "TXT"
 
     # Pseudo types
+    "DKIM"
     "DMARC"
   ];
 
