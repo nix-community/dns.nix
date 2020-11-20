@@ -20,6 +20,10 @@ let
     "SRV"
     "TXT"
 
+    # DNSSEC types
+    "DNSKEY"
+    "DS"
+
     # Pseudo types
     "DKIM"
     "DMARC"
