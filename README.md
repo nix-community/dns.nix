@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2020 Kirill Elagin <kirelagin@gmail.com>
+
+SPDX-License-Identifier: MIT
+-->
+
 _Nix DSL for defining DNS zones_
 
 nix-dns
