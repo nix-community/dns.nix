@@ -29,10 +29,7 @@ let
     }).config.zones."${name}";
 
   writeZone = name: zone:
-    pkgs.writeTextFile {
-      name = "${name}.zone";
-      text = toString (evalZone name zone);
-    };
+    (pkgs.writeText or builtins.toFile) "${name}.zone" (toString (evalZone name zone));
 in
 
 {
