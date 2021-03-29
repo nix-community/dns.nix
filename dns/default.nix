@@ -28,15 +28,10 @@ let
       ];
     }).config.zones."${name}";
 
-  writeZone = name: zone:
-    pkgs.writeTextFile {
-      name = "${name}.zone";
-      text = toString (evalZone name zone);
-    };
 in
 
 {
-  inherit evalZone writeZone;
+  inherit evalZone;
 
   inherit types;
 
