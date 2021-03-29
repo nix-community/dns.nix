@@ -1,21 +1,11 @@
-# SPDX-FileCopyrightText: 2019 Kirill Elagin <kirelagin@gmail.com>
+# SPDX-FileCopyrightText: 2021 Kirill Elagin <https://kir.elagin.me/>
 #
-# SPDX-License-Identifier: MIT
+# SPDX-License-Identifier: CC0-1.0
 
-{ pkgs ? import <nixpkgs> {} }:
-
-let
-  dns = import ./dns { inherit (pkgs) lib; };
-  writeZone = import ./util/writeZone.nix {
-    inherit (dns) evalZone;
-    inherit (pkgs) writeTextFile;
-  };
-in
-
-{
-  inherit (dns) evalZone;
-  inherit (dns) combinators;
-  inherit writeZone;
-
-  toString = name: zone: toString (dns.evalZone name zone);
-} // dns.combinators
+(import (
+  fetchTarball {
+    url = "https://github.com/edolstra/flake-compat/archive/99f1c2157fba4bfe6211a321fd0ee43199025dbf.tar.gz";
+    sha256 = "0x2jn3vrawwv9xp15674wjz9pixwjyj3j771izayl962zziivbx2"; }
+) {
+  src =  ./.;
+}).defaultNix
