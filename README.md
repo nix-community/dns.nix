@@ -21,7 +21,7 @@ Example of a zone
 ```nix
 # dns = import path/to/nix-dns;
 
-with dns.combinators; {
+with dns.lib.combinators; {
   SOA = {  # Human readable names for fields
     nameServer = "ns.test.com.";
     adminEmail = "admin@test.com";  # Email address with a real `@`!
@@ -102,14 +102,16 @@ Add it as an input to your flake:
   };
 
   outputs = { self, nixpkgs, dns }: {
-    # All functions from `nix-dns` are available in `dns.lib`.
+    # Most functions from `nix-dns` are available in `dns.lib`.
+    # Functions that require `stdenv` (e.g. `writeZone`) are in
+    # `dns.util.<system>`.
     # ...
   };
 }
 ```
 
-All examples below assume the old way of importing, but they should work with
-just one change: replace `dns` with `dns.lib` everywhere.
+All examples below assume the old way of importing, but they should work
+without any changes.
 
 #### Importing directly (old way)
 
@@ -153,7 +155,7 @@ services.nsd = {
       "example.com" = {
         # provideXFR = [ ... ];
         # notify = [ ... ];
-        data = dns.toString "example.com" (import ./dns/example.com { inherit dns; });
+        data = dns.lib.toString "example.com" (import ./dns/example.com { inherit dns; });
       };
     };
 };
@@ -166,7 +168,7 @@ services.nsd = {
 
 { dns }:
 
-with dns.combinators;
+with dns.lib.combinators;
 
 {
   SOA = {
@@ -199,7 +201,7 @@ types to be used in the NixOS module system. Using them you can define
 an option in your module such as this one:
 
 ```nix
-# dns = import path/to/nix-dns/dns { inherit pkgs; };
+# dns = import path/to/nix-dns/dns { inherit lib; };
 
 {
 

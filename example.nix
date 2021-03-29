@@ -5,9 +5,10 @@
 #
 
 let
-  dns = import ./. { };
+  dns = import ./.;
+  util = dns.util.${builtins.currentSystem};
 
-  testZone = with dns.combinators; {
+  testZone = with dns.lib.combinators; {
     SOA = {
       nameServer = "ns.test.com.";
       adminEmail = "admin@test.com";
@@ -61,4 +62,4 @@ let
   };
 in
 
-dns.writeZone "test.com" testZone
+util.writeZone "test.com" testZone
