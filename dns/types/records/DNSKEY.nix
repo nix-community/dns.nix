@@ -2,12 +2,12 @@
 #
 # SPDX-License-Identifier: MIT
 
-{ pkgs }:
+{ lib }:
 let
   inherit (builtins) isInt split;
-  inherit (pkgs.lib) concatStrings flatten mkOption types;
+  inherit (lib) concatStrings flatten mkOption types;
 
-  dnssecOptions = import ./dnssec.nix { inherit pkgs; };
+  dnssecOptions = import ./dnssec.nix { inherit lib; };
   inherit (dnssecOptions) mkDNSSECAlgorithmOption;
 in
 {

@@ -2,11 +2,11 @@
 #
 # SPDX-License-Identifier: MIT
 
-{ pkgs }:
+{ lib }:
 let
-  inherit (pkgs.lib) mkOption types;
+  inherit (lib) mkOption types;
 
-  dnssecOptions = import ./dnssec.nix { inherit pkgs; };
+  dnssecOptions = import ./dnssec.nix { inherit lib; };
   inherit (dnssecOptions) mkRegisteredNumberOption mkDNSSECAlgorithmOption;
 
   mkDSDigestTypeOption = { ... }@args: mkRegisteredNumberOption {

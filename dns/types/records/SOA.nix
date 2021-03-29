@@ -4,11 +4,11 @@
 # SPDX-License-Identifier: MIT
 #
 
-{ pkgs }:
+{ lib }:
 
 let
-  inherit (pkgs.lib) concatStringsSep removeSuffix replaceStrings;
-  inherit (pkgs.lib) mkOption types;
+  inherit (lib) concatStringsSep removeSuffix replaceStrings;
+  inherit (lib) mkOption types;
 
 in
 

@@ -5,7 +5,7 @@
 { pkgs ? import <nixpkgs> {} }:
 
 let
-  dns = import ./dns { inherit pkgs; };
+  dns = import ./dns { inherit (pkgs) lib; };
   writeZone = import ./util/writeZone.nix {
     inherit (dns) evalZone;
     inherit (pkgs) writeTextFile;

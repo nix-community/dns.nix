@@ -7,10 +7,9 @@
 # This is a “fake” record type, not actually part of DNS.
 # It gets compiled down to a TXT record.
 
-{ pkgs }:
+{ lib }:
 
 let
-  inherit (pkgs) lib;
   inherit (lib) mkOption types;
 
 in

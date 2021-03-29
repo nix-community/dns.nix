@@ -4,11 +4,10 @@
 # SPDX-License-Identifier: MIT
 #
 
-{ pkgs }:
+{ lib }:
 
 let
   inherit (builtins) map;
-  inherit (pkgs) lib;
 
 in
 

@@ -2,10 +2,10 @@
 #
 # SPDX-License-Identifier: MIT
 
-{ pkgs }:
+{ lib }:
 let
   inherit (builtins) attrNames isInt removeAttrs;
-  inherit (pkgs.lib) mkOption types;
+  inherit (lib) mkOption types;
 in
 rec {
   mkRegisteredNumberOption = { registryName, numberType, mnemonics }@args:

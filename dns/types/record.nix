@@ -4,10 +4,9 @@
 # SPDX-License-Identifier: MIT
 #
 
-{ pkgs }:
+{ lib }:
 
 let
-  inherit (pkgs) lib;
   inherit (lib) const isString mkOption types;
 
   defaults = {

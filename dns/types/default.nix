@@ -4,10 +4,10 @@
 # SPDX-License-Identifier: MIT
 #
 
-{ pkgs }:
+{ lib }:
 
 {
-  inherit (import ./zone.nix { inherit pkgs; }) zone subzone;
-  record = import ./record.nix { inherit pkgs; };
-  records = import ./records { inherit pkgs; };
+  inherit (import ./zone.nix { inherit lib; }) zone subzone;
+  record = import ./record.nix { inherit lib; };
+  records = import ./records { inherit lib; };
 }

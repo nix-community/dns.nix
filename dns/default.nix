@@ -4,13 +4,11 @@
 # SPDX-License-Identifier: MIT
 #
 
-{ pkgs }:
+{ lib }:
 
 let
-  inherit (pkgs) lib;
-
-  types = import ./types { inherit pkgs; };
-  combinators = import ./combinators.nix { inherit pkgs; };
+  types = import ./types { inherit lib; };
+  combinators = import ./combinators.nix { inherit lib; };
 
   evalZone = name: zone:
     (lib.evalModules {

@@ -4,10 +4,10 @@
 # SPDX-License-Identifier: MIT
 #
 
-{ pkgs }:
+{ lib }:
 
 let
-  inherit (pkgs.lib) genAttrs;
+  inherit (lib) genAttrs;
 
   types = [
     "A"
@@ -31,4 +31,4 @@ let
 
 in
 
-genAttrs types (t: import (./. + "/${t}.nix") { inherit pkgs; })
+genAttrs types (t: import (./. + "/${t}.nix") { inherit lib; })

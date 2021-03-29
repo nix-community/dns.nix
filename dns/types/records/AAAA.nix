@@ -4,10 +4,10 @@
 # SPDX-License-Identifier: MIT
 #
 
-{ pkgs }:
+{ lib }:
 
 let
-  inherit (pkgs.lib) mkOption types;
+  inherit (lib) mkOption types;
 
 in
 

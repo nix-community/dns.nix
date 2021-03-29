@@ -4,17 +4,17 @@
 # SPDX-License-Identifier: MIT
 #
 
-{ pkgs }:
+{ lib }:
 
 let
   inherit (builtins) attrValues filter map removeAttrs;
-  inherit (pkgs.lib) concatMapStringsSep concatStringsSep mapAttrs
+  inherit (lib) concatMapStringsSep concatStringsSep mapAttrs
                      mapAttrsToList optionalString;
-  inherit (pkgs.lib) mkOption types;
+  inherit (lib) mkOption types;
 
-  inherit (import ./record.nix { inherit pkgs; }) recordType writeRecord;
+  inherit (import ./record.nix { inherit lib; }) recordType writeRecord;
 
-  rsubtypes = import ./records { inherit pkgs; };
+  rsubtypes = import ./records { inherit lib; };
   rsubtypes' = removeAttrs rsubtypes ["SOA"];
 
   subzoneOptions = {
