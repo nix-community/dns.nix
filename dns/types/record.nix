@@ -1,5 +1,6 @@
 #
 # © 2019 Kirill Elagin <kirelagin@gmail.com>
+# © 2021 Naïm Favier <n@monade.li>
 #
 # SPDX-License-Identifier: MIT
 #
@@ -7,26 +8,21 @@
 { lib }:
 
 let
-  inherit (lib) const isString mkOption types;
-
-  defaults = {
-    class = "IN";
-    ttl = 24 * 60 * 60;
-  };
+  inherit (lib) isString mkOption types;
 
   recordType = rsubt:
     let
       submodule = types.submodule {
         options = {
           class = mkOption {
-            type = types.enum ["IN"];
-            default = defaults.class;
+            type = types.enum [ "IN" ];
+            default = "IN";
             example = "IN";
             description = "Resource record class. Only IN is supported";
           };
           ttl = mkOption {
-            type = types.ints.unsigned;  # TODO: u32
-            default = defaults.ttl;
+            type = types.nullOr types.ints.unsigned;  # TODO: u32
+            default = null;
             example = 300;
             description = "Record caching duration (in seconds)";
           };
@@ -38,13 +34,21 @@ let
   writeRecord = name: rsubt: data:
     let
       data' =
-        if isString data && rsubt ? fromString
-        then defaults // rsubt.fromString data
+        if isString data && rsubt ? fromString then
+          # add default values for the record type
+          (recordType rsubt).merge [] [ { file = ""; value = rsubt.fromString data; } ]
         else data;
       name' = rsubt.nameFixup or (n: _: n) name data';
       rtype = rsubt.rtype;
-    in with data';
-      "${name'}. ${toString ttl} ${class} ${rtype} ${rsubt.dataToString data'}";
+    in lib.concatStringsSep " " (with data'; [
+        "${name'}."
+      ] ++ lib.optionals (ttl != null) [
+        (toString ttl)
+      ] ++ [
+        class
+        rtype
+        (rsubt.dataToString data')
+      ]);
 
 in
 

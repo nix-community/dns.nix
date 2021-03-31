@@ -1,5 +1,6 @@
 #
 # © 2019 Kirill Elagin <kirelagin@gmail.com>
+# © 2021 Naïm Favier <n@monade.li>
 #
 # SPDX-License-Identifier: MIT
 #
@@ -10,7 +11,7 @@ let
   inherit (builtins) attrValues filter map removeAttrs;
   inherit (lib) concatMapStringsSep concatStringsSep mapAttrs
                      mapAttrsToList optionalString;
-  inherit (lib) mkOption types;
+  inherit (lib) mkOption literalExample types;
 
   inherit (import ./record.nix { inherit lib; }) recordType writeRecord;
 
@@ -40,8 +41,8 @@ let
     }) rsubtypes';
 
   subzone = types.submodule {
-      options = subzoneOptions;
-    };
+    options = subzoneOptions;
+  };
 
   writeSubzone = name: zone:
     let
@@ -56,8 +57,14 @@ let
       concatStringsSep "\n\n" groups'
       + optionalString (sub != "") ("\n\n" + sub);
 
-  zone = types.submodule ({name, ...}: {
+  zone = types.submodule ({ name, ... }: {
     options = {
+      TTL = mkOption {
+        type = types.ints.unsigned;
+        default = 24 * 60 * 60;
+        example = literalExample "60 * 60";
+        description = "Default record caching duration. Sets the $TTL variable";
+      };
       SOA = mkOption rec {
         type = recordType rsubtypes.SOA;
         example = {
@@ -72,11 +79,14 @@ let
     } // subzoneOptions;
 
     config = {
-      __toString = zone@{SOA, ...}:
-          ''
-            ${writeRecord name rsubtypes.SOA SOA}
+      __toString = zone@{ TTL, SOA, ... }:
+        ''
+          $TTL ${toString TTL}
 
-          '' + writeSubzone name zone + "\n";
+          ${writeRecord name rsubtypes.SOA SOA}
+
+          ${writeSubzone name zone}
+        '';
     };
   });
 
