@@ -4,7 +4,7 @@ SPDX-FileCopyrightText: 2021 Kirill Elagin <https://kir.elagin.me/>
 SPDX-License-Identifier: MPL-2.0 or MIT
 -->
 
-nix-dns
+dns.nix
 ========
 
 _A Nix DSL for defining DNS zones_
@@ -79,7 +79,7 @@ You can build an example zone in `example.nix` by running
 
 ### Importing
 
-There are two ways to import `nix-dns`.
+There are two ways to import `dns.nix`.
 
 #### As a flake
 
@@ -93,13 +93,13 @@ Add it as an input to your flake:
     # ...
 
     dns = {
-      url = "github:kirelagin/nix-dns";
+      url = "github:kirelagin/dns.nix";
       inputs.nixpkgs.follows = "nixpkgs";  # (optionally)
     };
   };
 
   outputs = { self, nixpkgs, dns }: {
-    # Most functions from `nix-dns` are available in `dns.lib`.
+    # Most functions from `dns.nix` are available in `dns.lib`.
     # Functions that require `stdenv` (e.g. `writeZone`) are in
     # `dns.util.<system>`.
     # ...
@@ -113,7 +113,7 @@ Always get the latest version from GitHub:
 
 ```nix
 let
-  dns = import (builtins.fetchTarball "https://github.com/kirelagin/nix-dns/archive/master.zip");
+  dns = import (builtins.fetchTarball "https://github.com/kirelagin/dns.nix/archive/master.zip");
 in {
   # ...
 }
@@ -169,7 +169,7 @@ When your system is defined as a flake:
 
 {
 
-# Add nix-dns to `inputs` (see above).
+# Add `dns.nix` to `inputs` (see above).
 # ...
 
 # In `outputs`:
