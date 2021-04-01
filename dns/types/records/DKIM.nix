@@ -1,7 +1,7 @@
 #
 # SPDX-FileCopyrightText: 2020 Kirill Elagin <https://kir.elagin.me/>
 #
-# SPDX-License-Identifier: MIT
+# SPDX-License-Identifier: MPL-2.0 or MIT
 #
 
 # This is a “fake” record type, not actually part of DNS.

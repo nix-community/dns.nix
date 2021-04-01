@@ -2,7 +2,7 @@
 # SPDX-FileCopyrightText: 2019 Kirill Elagin <https://kir.elagin.me/>
 # SPDX-FileCopyrightText: 2021 Naïm Favier <n@monade.li>
 #
-# SPDX-License-Identifier: MIT
+# SPDX-License-Identifier: MPL-2.0 or MIT
 #
 
 { lib }:
