@@ -1,26 +1,23 @@
 <!--
-SPDX-FileCopyrightText: 2020 Kirill Elagin <https://kir.elagin.me/>
+SPDX-FileCopyrightText: 2021 Kirill Elagin <https://kir.elagin.me/>
 
 SPDX-License-Identifier: MPL-2.0 or MIT
 -->
 
-_Nix DSL for defining DNS zones_
-
 nix-dns
 ========
 
+_A Nix DSL for defining DNS zones_
+
 This repository provides:
 
-1. NixOS-style module definitions that describe DNS zones and records in them
-2. A DSL that simplifies describing your DNS zones
+1. NixOS-style module definitions that describe DNS zones and records in them.
+2. A DSL that simplifies describing your DNS zones.
 
 
-Example of a zone
-------------------
+## An example of a zone
 
 ```nix
-# dns = import path/to/nix-dns;
-
 with dns.lib.combinators; {
   SOA = {  # Human readable names for fields
     nameServer = "ns.test.com.";
@@ -64,14 +61,14 @@ with dns.lib.combinators; {
 }
 ```
 
-You can build an example zone in `example.nix` by running `nix-build example.nix`.
+You can build an example zone in `example.nix` by running
+`nix build -f ./example.nix` or `nix-build ./example.nix`.
 
 
-Why?
------
+## Why?
 
-* DNS zone syntax is crazy. Nix is nice and structured.
-* Full power of a Turing-complete functional language
+* The DNS zone syntax is crazy. Nix is nice and structured.
+* Having the full power of a Turing-complete functional language
   (`let`, `if`, `map` and other things you are used to).
 * All kinds of shortcuts and useful combinators.
 * Strong typing provded by the NixOS module system.
@@ -84,7 +81,7 @@ Why?
 
 There are two ways to import `nix-dns`.
 
-#### As a flake (new way)
+#### As a flake
 
 Add it as an input to your flake:
 
@@ -110,10 +107,7 @@ Add it as an input to your flake:
 }
 ```
 
-All examples below assume the old way of importing, but they should work
-without any changes.
-
-#### Importing directly (old way)
+#### Importing directly (legacy)
 
 Always get the latest version from GitHub:
 
@@ -125,7 +119,7 @@ in {
 }
 ```
 
-To make your setup more reliable, you should pin the version used by specifying
+To make your setup more reproducible, you should pin the version used by specifying
 a commit hash or using a submodule. This is all a little clumsy and nowadays it
 is probably best to simply switch to flakes.
 
@@ -136,35 +130,8 @@ _There is a chance that in the future we will either integrate this into
 existing NixOS modules for different DNS servers, or will provide a separate
 NixOS module that will configure DNS servers for you._
 
-This example assumes `nsd`, but it should be pretty much the same for other daemons.
-
 ```nix
-# /etc/nixos/configuration.nix
-
-{
-
-services.nsd = {
-  enable = true;
-  zones =
-    let
-      dns = import (builtins.fetchTarball {
-        url = "https://github.com/kirelagin/nix-dns/archive/v0.3.1.tar.gz";
-        sha256 = "1ykmx6b7al1sh397spnpqis7c9bp0yfmgxxp3v3j7qq45fa5fs09";
-      });
-    in {
-      "example.com" = {
-        # provideXFR = [ ... ];
-        # notify = [ ... ];
-        data = dns.lib.toString "example.com" (import ./dns/example.com { inherit dns; });
-      };
-    };
-};
-
-}
-```
-
-```nix
-# /etc/nixos/dns/example.com
+# example.com.nix
 
 { dns }:
 
@@ -194,14 +161,51 @@ with dns.lib.combinators;
 }
 ```
 
+These example assume `nsd`, but it should be pretty much the same for other daemons.
+
+When your system is defined as a flake:
+
+```nix
+
+{
+
+# Add nix-dns to `inputs` (see above).
+# ...
+
+# In `outputs`:
+
+  nixosConfigurations.yourSystem = nixpkgs.lib.nixosSystem {
+
+    # ...
+
+    services.nsd = {
+      enable = true;
+      zones = {
+        "example.com" = {
+          # provideXFR = [ ... ];
+          # notify = [ ... ];
+          data = dns.lib.toString "example.com" (import ./example.com.nix { inherit dns; });
+        };
+      };
+    };
+
+  };
+
+}
+```
+
+If your system configuration is not a flake, everything will be essentially
+the same, you will just import it differently.
+
+
 ### In modules you develop
 
-`dns/default.nix` exports the `types` attribute, which contains DNS-related
+`dns.lib` provides the `types` attribute, which contains DNS-related
 types to be used in the NixOS module system. Using them you can define
 an option in your module such as this one:
 
 ```nix
-# dns = import path/to/nix-dns/dns { inherit lib; };
+# dns = ...
 
 {
 
@@ -210,7 +214,7 @@ yourModule = {
     # <...>
 
     zones = lib.mkOption {
-      type = lib.types.attrsOf dns.types.zone;
+      type = lib.types.attrsOf dns.lib.types.zone;
       description = "DNS zones";
     };
   };
@@ -226,5 +230,35 @@ yourModule = {
 
 As another example, take a look at the `evalZone` function in `dns/default.nix`,
 which takes a name for a zone and a zone definition, defines a “fake” module
-similar to the one above, and then evaluates it. `writeZone` is a helper function
-that additionally calls `toString` and writes the resulting string to a file.
+similar to the one above, and then evaluates it.
+
+`dns.utils` provides `writeZone`, which is a helper function that additionally
+calls `toString` and writes the resulting string to a file.
+
+
+## Contributing
+
+If you encounter any issues when using this library or have improvement ideas,
+please open an issue on GitHub.
+
+You are also very welcome to submit pull requests.
+
+Please, note that in this repository we are making effort to track
+the authorship information for all contributions.
+In particular, we are following the [REUSE] practices.
+The tl;dr is: please, add information about yourself to the headers of
+each of the files that you edited if your change was _substantial_
+(you get to judge what is substantial and what is not).
+
+[REUSE]: https://reuse.software/
+
+
+## License
+
+[MPL-2.0] © [Kirill Elagin] and contributors (see headers in the files).
+
+Additionally, all code in this repository is dual-licensed under the MIT license
+for direct compatibility with nixpkgs.
+
+[MPL-2.0]: https://spdx.org/licenses/MPL-2.0.html
+[Kirill Elagin]: https://kir.elagin.me/

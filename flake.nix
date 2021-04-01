@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: MPL-2.0 or MIT
 
 {
-  description = "Nix DSL for defining DNS zones";
+  description = "A Nix DSL for defining DNS zones";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs";
@@ -19,6 +19,7 @@
       lib = {
         inherit (dns) evalZone;
         inherit (dns) combinators;
+        inherit (dns) types;
         toString = name: zone: builtins.toString (dns.evalZone name zone);
       } // dns.combinators;
 
