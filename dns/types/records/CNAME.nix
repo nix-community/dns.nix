@@ -1,7 +1,7 @@
 #
 # SPDX-FileCopyrightText: 2019 Kirill Elagin <https://kir.elagin.me/>
 #
-# SPDX-License-Identifier: MIT
+# SPDX-License-Identifier: MPL-2.0 or MIT
 #
 
 { lib }:

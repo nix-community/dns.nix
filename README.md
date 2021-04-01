@@ -1,7 +1,7 @@
 <!--
 SPDX-FileCopyrightText: 2020 Kirill Elagin <https://kir.elagin.me/>
 
-SPDX-License-Identifier: MIT
+SPDX-License-Identifier: MPL-2.0 or MIT
 -->
 
 _Nix DSL for defining DNS zones_
