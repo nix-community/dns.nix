@@ -1,5 +1,5 @@
 #
-# © 2019 Kirill Elagin <kirelagin@gmail.com>
+# SPDX-FileCopyrightText: 2019 Kirill Elagin <https://kir.elagin.me/>
 #
 # SPDX-License-Identifier: MIT
 #

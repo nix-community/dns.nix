@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021 Kirill Elagin <kirelagin@gmail.com>
+# SPDX-FileCopyrightText: 2021 Kirill Elagin <https://kir.elagin.me/>
 #
 # SPDX-License-Identifier: MIT
 

@@ -1,6 +1,6 @@
 #
-# © 2019 Kirill Elagin <kirelagin@gmail.com>
-# © 2021 Naïm Favier <n@monade.li>
+# SPDX-FileCopyrightText: 2019 Kirill Elagin <https://kir.elagin.me/>
+# SPDX-FileCopyrightText: 2021 Naïm Favier <n@monade.li>
 #
 # SPDX-License-Identifier: MIT
 #
