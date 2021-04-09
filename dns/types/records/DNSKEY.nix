@@ -2,7 +2,10 @@
 #
 # SPDX-License-Identifier: MPL-2.0 or MIT
 
+# RFC 4034, 2
+
 { lib }:
+
 let
   inherit (builtins) isInt split;
   inherit (lib) concatStrings flatten mkOption types;

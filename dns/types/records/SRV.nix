@@ -4,10 +4,12 @@
 # SPDX-License-Identifier: MPL-2.0 or MIT
 #
 
+# RFC 2782
+
 { lib }:
 
 let
-  inherit (lib) mkOption types;
+  inherit (lib) dns mkOption types;
 
 in
 
@@ -42,7 +44,7 @@ in
       description = "The port on this target host of this service";
     };
     target = mkOption {
-      type = types.str;
+      type = dns.types.domain-name;
       example = "";
       description = "The domain name of the target host";
     };

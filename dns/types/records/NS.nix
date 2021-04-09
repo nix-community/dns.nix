@@ -4,10 +4,12 @@
 # SPDX-License-Identifier: MPL-2.0 or MIT
 #
 
+# RFC 1035, 3.3.11
+
 { lib }:
 
 let
-  inherit (lib) mkOption types;
+  inherit (lib) dns mkOption;
 
 in
 
@@ -15,7 +17,7 @@ in
   rtype = "NS";
   options = {
     nsdname = mkOption {
-      type = types.str;
+      type = dns.types.domain-name;
       example = "ns2.example.com";
       description = "A <domain-name> which specifies a host which should be authoritative for the specified class and domain";
     };

@@ -7,8 +7,14 @@
 { lib }:
 
 let
-  types = import ./types { inherit lib; };
-  combinators = import ./combinators.nix { inherit lib; };
+  dnslib = {
+    util = import ./util { inherit lib; };
+    inherit types;
+  };
+  types = import ./types { lib = lib'; };
+  lib' = lib // { dns = dnslib; };
+
+  combinators = import ./combinators.nix { lib = lib'; };
 
   evalZone = name: zone:
     (lib.evalModules {

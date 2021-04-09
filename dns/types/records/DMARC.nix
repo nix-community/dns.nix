@@ -7,10 +7,12 @@
 # This is a “fake” record type, not actually part of DNS.
 # It gets compiled down to a TXT record.
 
+# RFC 7208
+
 { lib }:
 
 let
-  inherit (lib) mkOption types;
+  inherit (lib) dns mkOption types;
 
 in
 
@@ -98,7 +100,8 @@ rec {
         (lib.filterAttrs (_k: v: v != null && v != ""))
         (lib.mapAttrsToList (k: v: "${k}=${v}"))
       ];
-    in ''"${lib.concatStringsSep "; " items + ";"}"'';
+      result = lib.concatStringsSep "; " items + ";";
+    in dns.util.writeCharacterString result;
   nameFixup = name: _self:
     "_dmarc.${name}";
 }

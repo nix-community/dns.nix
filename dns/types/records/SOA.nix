@@ -4,11 +4,13 @@
 # SPDX-License-Identifier: MPL-2.0 or MIT
 #
 
+# RFC 1035, 3.3.13
+
 { lib }:
 
 let
   inherit (lib) concatStringsSep removeSuffix replaceStrings;
-  inherit (lib) mkOption types;
+  inherit (lib) dns mkOption types;
 
 in
 
@@ -16,12 +18,12 @@ in
   rtype = "SOA";
   options = {
     nameServer = mkOption {
-      type = types.str;
+      type = dns.types.domain-name;
       example = "ns1.example.com";
       description = "The <domain-name> of the name server that was the original or primary source of data for this zone. Don't forget the dot at the end!";
     };
     adminEmail = mkOption {
-      type = types.str;
+      type = dns.types.domain-name;
       example = "admin@example.com";
       description = "An email address of the person responsible for this zone. (Note: in traditional zone files you are supposed to put a dot instead of `@` in your address; you can use `@` with this module and it is recommended to do so. Also don't put the dot at the end!)";
       apply = s: replaceStrings ["@"] ["."] (removeSuffix "." s);
