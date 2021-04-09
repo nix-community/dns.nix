@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+## [1.1.0]
+
 ### Changed
 
 - Options that correspond to domain names are now limited to 255 characters
@@ -35,5 +38,6 @@ versions were considered “beta”. So no detailed changelog is provided.
 - The project is now called `dns.nix` (was: `nix-dns`).
 
 
-[Unreleased]: https://github.com/kirelagin/dns.nix/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/kirelagin/dns.nix/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/kirelagin/dns.nix/releases/tag/v1.1.0
 [1.0.0]: https://github.com/kirelagin/dns.nix/releases/tag/v1.0.0
