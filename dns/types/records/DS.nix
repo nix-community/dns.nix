@@ -2,7 +2,10 @@
 #
 # SPDX-License-Identifier: MPL-2.0 or MIT
 
+# RFC 4034, 5
+
 { lib }:
+
 let
   inherit (lib) mkOption types;
 

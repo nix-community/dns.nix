@@ -4,6 +4,8 @@
 # SPDX-License-Identifier: MPL-2.0 or MIT
 #
 
+# RFC 8659
+
 { lib }:
 
 let
@@ -25,7 +27,7 @@ in
       description = "One of the defined property tags";
     };
     value = mkOption {
-      type = types.str;
+      type = types.str;  # section 4.1.1: not limited in length
       example = "ca.example.net";
       description = "Value of the property";
     };

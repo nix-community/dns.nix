@@ -7,6 +7,7 @@
 { lib }:
 
 {
+  inherit (import ./simple.nix { inherit lib; }) domain-name;
   inherit (import ./zone.nix { inherit lib; }) zone subzone;
   record = import ./record.nix { inherit lib; };
   records = import ./records { inherit lib; };

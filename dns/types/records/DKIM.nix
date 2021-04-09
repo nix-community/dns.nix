@@ -7,10 +7,12 @@
 # This is a “fake” record type, not actually part of DNS.
 # It gets compiled down to a TXT record.
 
+# RFC 6376
+
 { lib }:
 
 let
-  inherit (lib) mkOption types;
+  inherit (lib) dns mkOption types;
 
 in
 
@@ -69,7 +71,8 @@ rec {
         (lib.filterAttrs (k: _v: k != "selector"))
         (lib.mapAttrsToList (k: v: "${k}=${v}"))
       ];
-    in ''"${lib.concatStringsSep "; " items + ";"}"'';
+      result = lib.concatStringsSep "; " items + ";";
+    in dns.util.writeCharacterString result;
   nameFixup = name: self:
     "${self.selector}._domainkey.${name}";
 }
