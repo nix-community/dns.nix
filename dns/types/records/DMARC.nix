@@ -95,9 +95,11 @@ rec {
   };
   dataToString = data:
     let
-      items = ["v=DMARC1"] ++ lib.pipe data [
+      # The specification could be more clear on this, but `v` and `p` MUST
+      # be the first two tags in the record.
+      items = ["v=DMARC1; p=${data.p}"] ++ lib.pipe data [
         (builtins.intersectAttrs options)  # remove garbage list `_module`
-        (lib.filterAttrs (_k: v: v != null && v != ""))
+        (lib.filterAttrs (k: v: v != null && v != "" && k != "p"))
         (lib.mapAttrsToList (k: v: "${k}=${v}"))
       ];
       result = lib.concatStringsSep "; " items + ";";

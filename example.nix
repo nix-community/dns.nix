@@ -36,6 +36,8 @@ let
       (with spf; strict ["a:mail.example.com" google])
     ];
 
+    DMARC = [ (dmarc.postmarkapp "mailto:re+abcdefghijk@dmarc.postmarkapp.com") ];
+
     CAA = letsEncrypt "admin@example.com";
 
     SRV = [
