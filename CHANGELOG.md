@@ -15,6 +15,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## [1.1.1]
+
+### Changed
+
+- Fix: generated DMARC records were actually invalid due to the specification
+  not being very clear. Now we produce tags in the correct order.
+
+
 ## [1.1.0]
 
 ### Changed
