@@ -36,8 +36,8 @@ let
     mapAttrs (n: t: mkOption rec {
       type = types.listOf (recordType t);
       default = [];
-      example = [ t.example ];
-      description = "List of ${t} records for this zone/subzone";
+      # example = [ t.example ];  # TODO: any way to auto-generate an example for submodule?
+      description = "List of ${n} records for this zone/subzone";
     }) rsubtypes';
 
   subzone = types.submodule {
