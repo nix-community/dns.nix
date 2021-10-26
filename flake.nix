@@ -35,6 +35,9 @@
 
         checks = {
           eval-lib = pkgs.writeText "eval-lib" (builtins.deepSeq self.lib "OK");
+          reuse = pkgs.runCommand "reuse-lint" {
+            nativeBuildInputs = [ pkgs.reuse ];
+          } ''reuse --root ${./.} lint > "$out"'';
         };
       }
     );
