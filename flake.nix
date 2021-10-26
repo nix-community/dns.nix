@@ -32,6 +32,10 @@
             inherit (pkgs) writeTextFile;
           };
         };
+
+        checks = {
+          eval-lib = pkgs.writeText "eval-lib" (builtins.deepSeq self.lib "OK");
+        };
       }
     );
 }
