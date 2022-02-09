@@ -25,6 +25,13 @@ let
     "DNSKEY"
     "DS"
 
+    # DANE types
+    "SSHFP"
+    "TLSA"
+    "OPENPGPKEY"
+    "SVCB"
+    "HTTPS"
+
     # Pseudo types
     "DKIM"
     "DMARC"
