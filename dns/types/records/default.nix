@@ -25,6 +25,8 @@ let
     "DNSKEY"
     "DS"
 
+    "SSHFP"
+
     # Pseudo types
     "DKIM"
     "DMARC"
