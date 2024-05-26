@@ -33,5 +33,5 @@ in
     };
   };
   dataToString = {issuerCritical, tag, value, ...}:
-    ''${if issuerCritical then "1" else "0"} ${tag} "${value}"'';
+    ''${if issuerCritical then "128" else "0"} ${tag} "${value}"'';
 }
