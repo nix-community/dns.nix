@@ -96,15 +96,24 @@ let
     } // subzoneOptions;
 
     config = {
-      __toString = zone@{ TTL, SOA, ... }:
-        ''
-          $TTL ${toString TTL}
-          $ORIGIN ${name}.
+      __toString = zone@{ useOrigin, TTL, SOA, ... }:
+        if useOrigin then
+          ''
+            $ORIGIN ${name}.
+            $TTL ${toString TTL}
 
-          ${writeRecordRel name rsubtypes.SOA SOA}
+            ${writeRecordRel "@" rsubtypes.SOA SOA}
 
-          ${writeSubzoneRel name zone}
-        '';
+            ${writeSubzoneRel name zone}
+          ''
+	      else
+          ''
+            $TTL ${toString TTL}
+
+            ${writeRecord name rsubtypes.SOA SOA}
+
+            ${writeSubzone name zone}
+          '';
     };
   });
 
