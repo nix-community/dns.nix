@@ -8,7 +8,7 @@
 { lib }:
 
 let
-  inherit (lib) isString mkOption types removeSuffix;
+  inherit (lib) isString mkOption types removeSuffix concatStrings;
 
   recordType = rsubt:
     let
@@ -31,6 +31,7 @@ let
     in
       (if rsubt ? fromString then types.either types.str else lib.id) submodule;
 
+  # name == "@" : use unqualified domain name
   writeRecord = name: rsubt: data:
     let
       data' =
@@ -38,26 +39,11 @@ let
           # add default values for the record type
           (recordType rsubt).merge [] [ { file = ""; value = rsubt.fromString data; } ]
         else data;
-      name' = rsubt.nameFixup or (n: _: n) name data';
-      rtype = rsubt.rtype;
-    in lib.concatStringsSep " " (with data'; [
-        "${name'}."
-      ] ++ lib.optionals (ttl != null) [
-        (toString ttl)
-      ] ++ [
-        class
-        rtype
-        (rsubt.dataToString data')
-      ]);
+      name' = if name == "@" then
+        removeSuffix ".@" (rsubt.nameFixup or (_: _: "@") "@" data')
+      else
+        concatStrings [ (rsubt.nameFixup or (n: _: n) name data') "."];
 
-writeRecordRel = name: rsubt: data:
-    let
-      data' =
-        if isString data && rsubt ? fromString then
-          # add default values for the record type
-          (recordType rsubt).merge [] [ { file = ""; value = rsubt.fromString data; } ]
-        else data;
-      name' = removeSuffix ".@" (rsubt.nameFixup or (n: _: n) name data');
       rtype = rsubt.rtype;
     in lib.concatStringsSep " " (with data'; [
         "${name'}"
@@ -74,5 +60,4 @@ in
 {
   inherit recordType;
   inherit writeRecord;
-  inherit writeRecordRel;
 }

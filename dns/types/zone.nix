@@ -102,9 +102,9 @@ let
             $ORIGIN ${name}.
             $TTL ${toString TTL}
 
-            ${writeRecordRel "@" rsubtypes.SOA SOA}
+            ${writeRecord "@" rsubtypes.SOA SOA}
 
-            ${writeSubzoneRel name zone}
+            ${writeSubzone "@" zone}
           ''
 	      else
           ''
