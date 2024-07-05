@@ -8,7 +8,7 @@
 { lib }:
 
 let
-  inherit (lib) isString mkOption types removeSuffix concatStrings;
+  inherit (lib) isString mkOption types removeSuffix concatStrings hasSuffix;
 
   recordType = rsubt:
     let
@@ -39,8 +39,8 @@ let
           # add default values for the record type
           (recordType rsubt).merge [] [ { file = ""; value = rsubt.fromString data; } ]
         else data;
-      name' = if name == "@" then
-        removeSuffix ".@" (rsubt.nameFixup or (_: _: "@") "@" data')
+      name' = if name == "@" || hasSuffix ".@" name then
+        removeSuffix ".@" (rsubt.nameFixup or (n: _: n) name data')
       else
         concatStrings [ (rsubt.nameFixup or (n: _: n) name data') "."];
 
