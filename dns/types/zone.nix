@@ -13,7 +13,7 @@ let
                      mapAttrsToList optionalString;
   inherit (lib) mkOption literalExample types;
 
-  inherit (import ./record.nix { inherit lib; }) recordType writeRecord;
+  inherit (import ./record.nix { inherit lib; }) recordType writeRecord writeRecordRel;
 
   rsubtypes = import ./records { inherit lib; };
   rsubtypes' = removeAttrs rsubtypes ["SOA"];
@@ -56,9 +56,26 @@ let
     in
       concatStringsSep "\n\n" groups'
       + optionalString (sub != "") ("\n\n" + sub);
+  writeSubzoneRel = name: zone:
+    let
+      name' = if zone ? SOA then "@" else name;
+      groupToString = pseudo: subt:
+        concatMapStringsSep "\n" (writeRecordRel name' subt) (zone."${pseudo}"); # (attrByPath [pseudo] [] zone);
+      groups = mapAttrsToList groupToString rsubtypes';
+      groups' = filter (s: s != "") groups;
 
+      writeSubzoneRel' = subname: writeSubzoneRel "${subname}";
+      sub = concatStringsSep "\n\n" (mapAttrsToList writeSubzoneRel' zone.subdomains);
+    in
+      (concatStringsSep "\n\n" groups') + optionalString (sub != "") ("\n\n" + sub);
   zone = types.submodule ({ name, ... }: {
     options = {
+      useOrigin = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Wether to use $ORIGIN and unqualified name or fqdn when exporting the zone.";
+      };
+
       TTL = mkOption {
         type = types.ints.unsigned;
         default = 24 * 60 * 60;
@@ -82,10 +99,11 @@ let
       __toString = zone@{ TTL, SOA, ... }:
         ''
           $TTL ${toString TTL}
+          $ORIGIN ${name}.
 
-          ${writeRecord name rsubtypes.SOA SOA}
+          ${writeRecordRel name rsubtypes.SOA SOA}
 
-          ${writeSubzone name zone}
+          ${writeSubzoneRel name zone}
         '';
     };
   });

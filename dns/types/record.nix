@@ -50,9 +50,29 @@ let
         (rsubt.dataToString data')
       ]);
 
+writeRecordRel = name: rsubt: data:
+    let
+      data' =
+        if isString data && rsubt ? fromString then
+          # add default values for the record type
+          (recordType rsubt).merge [] [ { file = ""; value = rsubt.fromString data; } ]
+        else data;
+      name' = rsubt.nameFixup or (n: _: n) name data';
+      rtype = rsubt.rtype;
+    in lib.concatStringsSep " " (with data'; [
+        "${name'}"
+      ] ++ lib.optionals (ttl != null) [
+        (toString ttl)
+      ] ++ [
+        class
+        rtype
+        (rsubt.dataToString data')
+      ]);
+
 in
 
 {
   inherit recordType;
   inherit writeRecord;
+  inherit writeRecordRel;
 }
