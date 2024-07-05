@@ -13,7 +13,7 @@ let
                      mapAttrsToList optionalString;
   inherit (lib) mkOption literalExample types;
 
-  inherit (import ./record.nix { inherit lib; }) recordType writeRecord writeRecordRel;
+  inherit (import ./record.nix { inherit lib; }) recordType writeRecord;
 
   rsubtypes = import ./records { inherit lib; };
   rsubtypes' = removeAttrs rsubtypes ["SOA"];
@@ -56,18 +56,6 @@ let
     in
       concatStringsSep "\n\n" groups'
       + optionalString (sub != "") ("\n\n" + sub);
-  writeSubzoneRel = name: zone:
-    let
-      name' = if zone ? SOA then "@" else name;
-      groupToString = pseudo: subt:
-        concatMapStringsSep "\n" (writeRecordRel name' subt) (zone."${pseudo}"); # (attrByPath [pseudo] [] zone);
-      groups = mapAttrsToList groupToString rsubtypes';
-      groups' = filter (s: s != "") groups;
-
-      writeSubzoneRel' = subname: writeSubzoneRel "${subname}";
-      sub = concatStringsSep "\n\n" (mapAttrsToList writeSubzoneRel' zone.subdomains);
-    in
-      (concatStringsSep "\n\n" groups') + optionalString (sub != "") ("\n\n" + sub);
   zone = types.submodule ({ name, ... }: {
     options = {
       useOrigin = mkOption {
