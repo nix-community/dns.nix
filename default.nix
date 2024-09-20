@@ -14,7 +14,13 @@ in
 
 rec {
   lib = {
-    inherit (dns) evalZone combinators types;
+    inherit (dns)
+      combinators
+      evalZone
+      mkReverseRecord
+      types
+      ;
+
     toString = name: zone: builtins.toString (dns.evalZone name zone);
   } // dns.combinators;
 

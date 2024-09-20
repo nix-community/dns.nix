@@ -40,4 +40,6 @@ in
   inherit types;
 
   inherit combinators;
+
+  inherit (dnslib.util) mkReverseRecord;
 }
