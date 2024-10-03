@@ -33,7 +33,7 @@ let
     MX = mx.google;
 
     TXT = [
-      (with spf; strict ["a:mail.example.com" google])
+      (with spf; strict [ "a:mail.example.com" google ])
     ];
 
     DMARC = [ (dmarc.postmarkapp "mailto:re+abcdefghijk@dmarc.postmarkapp.com") ];
@@ -41,10 +41,39 @@ let
     CAA = letsEncrypt "admin@example.com";
 
     SRV = [
-      { service = "sip";
+      {
+        service = "sip";
         proto = "tcp";
         port = 5060;
         target = "sip.example.com";
+      }
+    ];
+
+    SSHFP = [
+      {
+        algorithm = "ed25519";
+        mode = "sha256";
+        fingerprint = "899EB4AC9285578AFDA3CCBE152EE78D8618B8F3862FEF2703E1FC7011E9B8AA";
+      }
+    ];
+    OPENPGPKEY = [
+      "very long base64 text"
+    ];
+    HTTPS = [
+      {
+        svcPriority = 1;
+        targetName = ".";
+        alpn = [ "http/1.1" "h2" "h3" ];
+        ipv4hint = [ "203.0.113.1" "203.0.113.2" "203.0.113.3" ];
+        ipv6hint = [ "4321:0:1:2:3:4:567:89ab" ];
+      }
+    ];
+    TLSA = [
+      {
+        certUsage = "dane-ee";
+        selector = "spki";
+        match = "sha256";
+        certificate = "899EB4AC9285578AFDA3CCBE152EE78D8618B8F3862FEF2703E1FC7011E9B8AA";
       }
     ];
 
