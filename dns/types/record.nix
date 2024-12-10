@@ -46,7 +46,7 @@ let
 
       rtype = rsubt.rtype;
     in lib.concatStringsSep " " (with data'; [
-        "${name'}"
+        name'
       ] ++ lib.optionals (ttl != null) [
         (toString ttl)
       ] ++ [
