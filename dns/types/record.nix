@@ -8,7 +8,7 @@
 { lib }:
 
 let
-  inherit (lib) isString mkOption types removeSuffix concatStrings hasSuffix;
+  inherit (lib) hasSuffix isString mkOption removeSuffix types;
 
   recordType = rsubt:
     let
