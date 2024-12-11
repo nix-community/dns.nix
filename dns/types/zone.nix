@@ -56,9 +56,14 @@ let
     in
       concatStringsSep "\n\n" groups'
       + optionalString (sub != "") ("\n\n" + sub);
-
   zone = types.submodule ({ name, ... }: {
     options = {
+      useOrigin = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Wether to use $ORIGIN and unqualified name or fqdn when exporting the zone.";
+      };
+
       TTL = mkOption {
         type = types.ints.unsigned;
         default = 24 * 60 * 60;
@@ -79,14 +84,24 @@ let
     } // subzoneOptions;
 
     config = {
-      __toString = zone@{ TTL, SOA, ... }:
-        ''
-          $TTL ${toString TTL}
+      __toString = zone@{ useOrigin, TTL, SOA, ... }:
+        if useOrigin then
+          ''
+            $ORIGIN ${name}.
+            $TTL ${toString TTL}
 
-          ${writeRecord name rsubtypes.SOA SOA}
+            ${writeRecord "@" rsubtypes.SOA SOA}
 
-          ${writeSubzone name zone}
-        '';
+            ${writeSubzone "@" zone}
+          ''
+	      else
+          ''
+            $TTL ${toString TTL}
+
+            ${writeRecord name rsubtypes.SOA SOA}
+
+            ${writeSubzone name zone}
+          '';
     };
   });
 
