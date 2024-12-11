@@ -77,6 +77,7 @@ You can build an example zone in `example.nix` by running
 
 ## Use
 
+
 ### Importing
 
 There are two ways to import `dns.nix`.
@@ -123,12 +124,8 @@ To make your setup more reproducible, you should pin the version used by specify
 a commit hash or using a submodule. This is all a little clumsy and nowadays it
 is probably best to simply switch to flakes.
 
-
-### In your NixOS configuration
-
-_There is a chance that in the future we will either integrate this into
-existing NixOS modules for different DNS servers, or will provide a separate
-NixOS module that will configure DNS servers for you._
+### Basic use
+Define a zone content:
 
 ```nix
 # example.com.nix
@@ -143,7 +140,7 @@ with dns.lib.combinators;
     adminEmail = "admin@example.com";
     serial = 2019030800;
   };
-
+  useOrigin = false; # default value, see comment below.
   NS = [
     "ns1.example.com."
     "ns2.example.com."
@@ -160,6 +157,32 @@ with dns.lib.combinators;
   };
 }
 ```
+
+Then use `toString` to generate as a string.
+
+``` nix
+{ dns }:
+
+  zoneAsString = dns.lib.toString "example.com" (import ./example.com.nix) { inherit dns; };
+```
+
+
+If `useOrigin=false`, the default value, serialization will use fully qualified name.
+For instance, `A = [ "203.0.113.1" ]`will be serialized as `example.com. A 203.0.113.1`.
+
+If `useOrigin=true`, `toString` adds `$ORIGIN example.com.` and use `@` as domain name.
+`A = [ "203.0.113.1" ]`will be then serialized as 
+
+``` dns-zone
+$ORIGIN example.com.
+@ A 203.0.113.1
+```
+
+### In your NixOS configuration
+
+_There is a chance that in the future we will either integrate this into
+existing NixOS modules for different DNS servers, or will provide a separate
+NixOS module that will configure DNS servers for you._
 
 These example assume `nsd`, but it should be pretty much the same for other daemons.
 
