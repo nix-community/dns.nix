@@ -21,6 +21,7 @@ let
     "SRV"
     "TXT"
     "PTR"
+    "HTTPS"
 
     # DNSSEC types
     "DNSKEY"
