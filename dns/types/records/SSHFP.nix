@@ -26,7 +26,7 @@ in
       type = types.enum (attrNames algorithm);
       apply = value: algorithm.${value};
     };
-    mode = mkOption {
+    fingerprintType = mkOption {
       example = "sha256";
       type = types.enum (attrNames mode);
       apply = value: mode.${value};

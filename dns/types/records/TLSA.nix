@@ -17,7 +17,7 @@ let
     "spki" = 1;
   };
   match = {
-    "full" = 0;
+    "exact" = 0;
     "sha256" = 1;
     "sha512" = 2;
   };
@@ -35,7 +35,7 @@ in
       type = types.enum (attrNames selectors);
       apply = value: selectors.${value};
     };
-    match = mkOption {
+    matchingType = mkOption {
       example = "sha256";
       type = types.enum (attrNames match);
       apply = value: match.${value};
