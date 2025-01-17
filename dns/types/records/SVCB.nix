@@ -14,7 +14,7 @@ let
     types
     ;
 
-  mkSvcParams = concatStringsSep " " (
+  mkSvcParams = params: concatStringsSep " " (
     filter (s: s != "") (
       mapAttrsToList (
         name: value:
@@ -26,11 +26,11 @@ let
           "${name}=${builtins.toString value}"
         else
           ""
-      ) config
+      ) params
     )
   );
 in
-rec {
+{
   rtype = "SVCB";
   options = {
     svcPriority = mkOption {
@@ -89,5 +89,5 @@ rec {
       port
       ;
   }
-}"
+}";
 }

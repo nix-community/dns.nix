@@ -52,7 +52,7 @@ let
     SSHFP = [
       {
         algorithm = "ed25519";
-        mode = "sha256";
+        fingerprintType = "sha256";
         fingerprint = "899EB4AC9285578AFDA3CCBE152EE78D8618B8F3862FEF2703E1FC7011E9B8AA";
       }
     ];
@@ -72,7 +72,7 @@ let
       {
         certUsage = "dane-ee";
         selector = "spki";
-        match = "sha256";
+        matchingType = "sha256";
         certificate = "899EB4AC9285578AFDA3CCBE152EE78D8618B8F3862FEF2703E1FC7011E9B8AA";
       }
     ];
