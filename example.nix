@@ -5,8 +5,8 @@
 #
 
 let
-  dns = import ./.;
-  util = dns.util.${builtins.currentSystem};
+  dns = import ./. { };
+  util = dns.util;
 
   testZone = with dns.lib.combinators; {
     SOA = {
