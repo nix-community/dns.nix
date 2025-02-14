@@ -39,10 +39,15 @@ let
           # add default values for the record type
           (recordType rsubt).merge [] [ { file = ""; value = rsubt.fromString data; } ]
         else data;
-      name' = let fname = rsubt.nameFixup or (n: _: n) name data'; in
-        if name == "@" then name
-        else if (hasSuffix ".@" name) then removeSuffix ".@" fname
-        else "${fname}.";
+      name' =
+        let
+          fname = rsubt.nameFixup or (n: _: n) name data';
+        in
+          if fname == "@"
+          then fname
+          else if (hasSuffix ".@" fname)
+          then removeSuffix ".@" fname
+          else "${fname}.";
       rtype = rsubt.rtype;
     in lib.concatStringsSep " " (with data'; [
         name'
