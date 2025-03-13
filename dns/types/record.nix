@@ -27,6 +27,7 @@ let
             description = "Record caching duration (in seconds)";
           };
         } // rsubt.options;
+        config._module.args = { inherit (lib) dns; };
       };
     in
       (if rsubt ? fromString then types.either types.str else lib.id) submodule;
