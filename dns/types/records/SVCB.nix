@@ -117,7 +117,5 @@ in
       ;
   }
 }";
-  nameFixup = lib.mkIf (self.nodeServiceName != null) 
-    (name: self:
-      "${self.nodeServiceName}.${name}");
+  nameFixup = name: self: if (self.nodeServiceName != null) then "${self.nodeServiceName}.${name}" else name;
 }
