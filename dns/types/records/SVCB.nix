@@ -10,6 +10,7 @@ let
     isInt
     isList
     mapAttrsToList
+    mkEnableOption
     mkOption
     types
     ;
@@ -75,6 +76,29 @@ in
       type = types.nullOr types.str;
       default = null;
     };
+    dohpath = mkOption {
+      example = "/dns-query{?dns}";
+      type = types.nullOr types.str;
+      default = null;
+    };
+    tls-supported-groups = mkOption {
+      example = [ 23 29 ];
+      default = null;
+      type = types.nullOr (types.nonEmptyListOf types.int.u16);
+    };
+    ohttp = mkOption {
+      example = true;
+      default = false;
+      type = types.bool;
+    };
+
+    # For when the AttrLeaf convention is required
+    nodeServiceName = mkOption {
+      example = "_8443._https"
+      description = "If the protocol requires the underscored node name prefix specified in RFC 8552, the node name to use";
+      type = types.nullOr types.strMatching "^_(.+)";
+      default = null;
+    };
   };
   dataToString = { svcPriority, targetName, mandatory ? null, alpn ? null, no-default-alpn ? null, port ? null, ipv4hint ? null, ipv6hint ? null, ech ? null, ... }:
 "${toString svcPriority} ${targetName} ${
@@ -87,7 +111,13 @@ in
       mandatory
       no-default-alpn
       port
+      dohpath
+      tls-supported-groups
+      ohttp
       ;
   }
 }";
+  nameFixup = lib.mkIf (self.nodeServiceName != null) 
+    (name: self:
+      "${self.nodeServiceName}.${name}");
 }
