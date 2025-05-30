@@ -163,7 +163,7 @@ Then use `toString` to generate as a string.
 ``` nix
 { dns }:
 
-  zoneAsString = dns.lib.toString "example.com" (import ./example.com.nix) { inherit dns; };
+  zoneAsString = dns.lib.toString "example.com" (import ./example.com.nix { inherit dns; });
 ```
 
 
