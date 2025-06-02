@@ -10,7 +10,7 @@
 let
   inherit (builtins) filter removeAttrs;
   inherit (lib) concatMapStringsSep concatStringsSep mapAttrs
-                     mapAttrsToList optionalString;
+                     mapAttrsToList optionalString trim;
   inherit (lib) mkOption literalExample types;
 
   inherit (import ./record.nix { inherit lib; }) recordType writeRecord;
@@ -55,7 +55,7 @@ let
       sub = concatStringsSep "\n\n" (mapAttrsToList writeSubzone' zone.subdomains);
     in
       concatStringsSep "\n\n" groups'
-      + optionalString (sub != "") ("\n\n" + sub);
+      + optionalString (sub != "") ("\n\n" + trim sub);
   zone = types.submodule ({ name, ... }: {
     options = {
       useOrigin = mkOption {
