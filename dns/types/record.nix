@@ -20,6 +20,11 @@ let
             example = "IN";
             description = "Resource record class. Only IN is supported";
           };
+          nameFixup = mkOption {
+            type = types.functionTo (types.functionTo types.str);
+            default = name: data: name;
+            description = "Function for post-processing the name";
+          };
           ttl = mkOption {
             type = types.nullOr types.ints.unsigned;  # TODO: u32
             default = null;
@@ -39,7 +44,7 @@ let
           # add default values for the record type
           (recordType rsubt).merge [] [ { file = ""; value = rsubt.fromString data; } ]
         else data;
-      name' = let fname = rsubt.nameFixup or (n: _: n) name data'; in
+      name' = let fname = rsubt.nameFixup name data'; in
         if name == "@" then name
         else if (hasSuffix ".@" name) then removeSuffix ".@" fname
         else "${fname}.";
