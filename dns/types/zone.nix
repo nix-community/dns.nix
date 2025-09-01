@@ -8,9 +8,9 @@
 { lib }:
 
 let
-  inherit (builtins) attrValues filter map removeAttrs;
+  inherit (builtins) filter removeAttrs;
   inherit (lib) concatMapStringsSep concatStringsSep mapAttrs
-                     mapAttrsToList optionalString;
+                     mapAttrsToList optionalString trim;
   inherit (lib) mkOption literalExample types;
 
   inherit (import ./record.nix { inherit lib; }) recordType writeRecord;
@@ -33,7 +33,7 @@ let
       description = "Records for subdomains of the domain";
     };
   } //
-    mapAttrs (n: t: mkOption rec {
+    mapAttrs (n: t: mkOption {
       type = types.listOf (recordType t);
       default = [];
       # example = [ t.example ];  # TODO: any way to auto-generate an example for submodule?
@@ -47,7 +47,7 @@ let
   writeSubzone = name: zone:
     let
       groupToString = pseudo: subt:
-        concatMapStringsSep "\n" (writeRecord name subt) (zone."${pseudo}");
+        concatMapStringsSep "\n" (writeRecord name subt) zone."${pseudo}";
       groups = mapAttrsToList groupToString rsubtypes';
       groups' = filter (s: s != "") groups;
 
@@ -55,13 +55,13 @@ let
       sub = concatStringsSep "\n\n" (mapAttrsToList writeSubzone' zone.subdomains);
     in
       concatStringsSep "\n\n" groups'
-      + optionalString (sub != "") ("\n\n" + sub);
+      + optionalString (sub != "") ("\n\n" + trim sub);
   zone = types.submodule ({ name, ... }: {
     options = {
       useOrigin = mkOption {
         type = types.bool;
         default = false;
-        description = "Wether to use $ORIGIN and unqualified name or fqdn when exporting the zone.";
+        description = "Whether to use $ORIGIN and unqualified name or fqdn when exporting the zone.";
       };
 
       TTL = mkOption {
