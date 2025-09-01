@@ -17,7 +17,8 @@ rec {
     inherit (dns)
       combinators
       evalZone
-      mkReverseRecord
+      mkIPv4ReverseRecord
+      mkIPv6ReverseRecord
       types
       ;
 
