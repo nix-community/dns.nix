@@ -9,6 +9,7 @@ let
     filter
     isInt
     isList
+    isString
     mapAttrsToList
     mkOption
     types
@@ -24,6 +25,8 @@ let
           "${name}=${concatStringsSep "," value}"
         else if isInt value then
           "${name}=${builtins.toString value}"
+        else if isString value then
+          "${name}=${value}"
         else
           ""
       ) params
