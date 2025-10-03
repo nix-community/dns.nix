@@ -35,18 +35,32 @@ let
 
   # : str -> [ str ]
   # Returns the record of the ipv6 as a list
-  mkRecordAux = v6:
+  mkIPv6RecordAux = v6:
     let
-      splitted = lib.splitString ":" v6;
+      v6' = if lib.hasPrefix "::" v6 then
+        "0${v6}"
+      else if lib.hasSuffix "::" v6 then
+        "${v6}0"
+      else
+        v6;
+      splitted = lib.splitString ":" v6';
       n = 8 - builtins.length (lib.filter (x: x != "") splitted);
     in
       lib.stringToCharacters (lib.concatMapStrings (align4BytesOrExpand n) splitted);
 
   # : str -> str
   # Returns the reversed record of the ipv6
-  mkReverseRecord = v6:
-    lib.concatStringsSep "." (lib.reverseList (mkRecordAux v6)) + ".ip6.arpa";
+  mkIPv6ReverseRecord = v6:
+    lib.concatStringsSep "." (lib.reverseList (mkIPv6RecordAux v6)) + ".ip6.arpa";
 
+  # : str -> str
+  # Returns the reversed record of the ipv4
+  mkIPv4ReverseRecord = v4:
+    lib.concatStringsSep "." (
+      lib.reverseList (
+        lib.splitString "." v4
+      )
+    ) + ".in-addr.arpa";
 in {
-  inherit writeCharacterString mkReverseRecord;
+  inherit writeCharacterString mkIPv4ReverseRecord mkIPv6ReverseRecord;
 }
