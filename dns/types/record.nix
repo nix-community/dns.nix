@@ -29,29 +29,24 @@ let
         } // rsubt.options;
       };
     in
-      (if rsubt ? fromString then types.either types.str else lib.id) submodule;
+      (if rsubt ? fromString then types.coercedTo types.str rsubt.fromString else lib.id) submodule;
 
   # name == "@" : use unqualified domain name
   writeRecord = name: rsubt: data:
     let
-      data' =
-        if isString data && rsubt ? fromString then
-          # add default values for the record type
-          (recordType rsubt).merge [] [ { file = ""; value = rsubt.fromString data; } ]
-        else data;
-      name' = let fname = rsubt.nameFixup or (n: _: n) name data'; in
+      name' = let fname = rsubt.nameFixup or (n: _: n) name data; in
         if name == "@" then name
         else if (hasSuffix ".@" name) then removeSuffix ".@" fname
         else "${fname}.";
       rtype = rsubt.rtype;
-    in lib.concatStringsSep " " (with data'; [
+    in lib.concatStringsSep " " (with data; [
         name'
       ] ++ lib.optionals (ttl != null) [
         (toString ttl)
       ] ++ [
         class
         rtype
-        (rsubt.dataToString data')
+        (rsubt.dataToString data)
       ]);
 
 in
