@@ -35,8 +35,8 @@ let
   writeRecord = name: rsubt: data:
     let
       name' = let fname = rsubt.nameFixup or (n: _: n) name data; in
-        if name == "@" then name
-        else if (hasSuffix ".@" name) then removeSuffix ".@" fname
+        if fname == "@" then name
+        else if (hasSuffix ".@" fname) then removeSuffix ".@" fname
         else "${fname}.";
       rtype = rsubt.rtype;
     in lib.concatStringsSep " " (with data; [
