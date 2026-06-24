@@ -5,8 +5,14 @@
 { lib }:
 
 let
-  inherit (builtins) genList stringLength substring;
-  inherit (lib.strings) concatMapStringsSep;
+  inherit (builtins)
+    genList
+    stringLength
+    substring
+    concatStringsSep
+    ;
+  inherit (lib.strings) concatMapStringsSep splitString;
+  inherit (lib.lists) reverseList;
 
   # : int -> str -> [str], such that each output str is <= n bytes
   splitInGroupsOf =
@@ -42,26 +48,46 @@ let
           "${v6}0"
         else
           v6;
-      splitted = lib.splitString ":" v6';
+      splitted = splitString ":" v6';
       n = 8 - builtins.length (lib.filter (x: x != "") splitted);
     in
     lib.stringToCharacters (lib.concatMapStrings (align4BytesOrExpand n) splitted);
 
   # : str -> str
   # Returns the reversed record of the ipv6
-  mkIPv6ReverseRecord = v6: lib.concatStringsSep "." (lib.reverseList (mkIPv6RecordAux v6)) + ".ip6.arpa";
+  mkIPv6ReverseRecord = v6: concatStringsSep "." (reverseList (mkIPv6RecordAux v6)) + ".ip6.arpa";
+
+  # : [ str ] -> str
+  # Reverse the list then concat with sep "."
+  reverse_concat_octets = octets: concatStringsSep "." (reverseList octets);
 
   # : str -> str
   # Returns the reversed record of the ipv4
   mkIPv4ReverseRecord =
     v4:
     lib.pipe v4 [
-      (lib.splitString ".")
-      lib.reverseList
-      (lib.concatStringsSep ".")
+      (splitString ".")
+      reverse_concat_octets
       (s: s + ".in-addr.arpa")
+    ];
+
+  # : str -> [ str str]
+  # Returns the reversed origin prefix and host octets
+  mkIPv4ReverseRecord' =
+    depth: v4:
+    let
+      reverse_octets = splitString "." v4;
+    in
+    [
+      (reverse_concat_octets (lib.drop depth reverse_octets)) # host octets
+      (reverse_concat_octets (lib.take depth reverse_octets)) # prefix
     ];
 in
 {
-  inherit writeCharacterString mkIPv4ReverseRecord mkIPv6ReverseRecord;
+  inherit
+    writeCharacterString
+    mkIPv4ReverseRecord
+    mkIPv4ReverseRecord'
+    mkIPv6ReverseRecord
+    ;
 }

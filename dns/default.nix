@@ -12,21 +12,27 @@ let
     inherit types;
   };
   types = import ./types { lib = lib'; };
-  lib' = lib // { dns = dnslib; };
+  lib' = lib // {
+    dns = dnslib;
+  };
 
   combinators = import ./combinators.nix { lib = lib'; };
 
-  evalZone = name: zone:
+  evalZone =
+    name: zone:
     (lib.evalModules {
       modules = [
-        { options = {
+        {
+          options = {
             zones = lib.mkOption {
               type = lib.types.attrsOf types.zone;
               description = "DNS zones";
             };
           };
           config = {
-            zones = { "${name}" = zone; };
+            zones = {
+              "${name}" = zone;
+            };
           };
         }
       ];
@@ -41,5 +47,5 @@ in
 
   inherit combinators;
 
-  inherit (dnslib.util) mkIPv4ReverseRecord mkIPv6ReverseRecord;
+  inherit (dnslib.util) mkIPv4ReverseRecord mkIPv4ReverseRecord' mkIPv6ReverseRecord;
 }

@@ -10,23 +10,34 @@
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      flake-utils,
+    }:
     let
       inherit (nixpkgs) lib;
       dns = import ./dns { inherit lib; };
-    in {
+    in
+    {
 
       lib = {
         inherit (dns) evalZone;
         inherit (dns) combinators;
         inherit (dns) types;
-        inherit (dns) mkIPv4ReverseRecord mkIPv6ReverseRecord;
+        inherit (dns) mkIPv4ReverseRecord mkIPv4ReverseRecord' mkIPv6ReverseRecord;
         toString = name: zone: builtins.toString (dns.evalZone name zone);
-      } // dns.combinators;
+      }
+      // dns.combinators;
 
-    } // flake-utils.lib.eachDefaultSystem (system:
-      let pkgs = nixpkgs.legacyPackages.${system};
-      in {
+    }
+    // flake-utils.lib.eachDefaultSystem (
+      system:
+      let
+        pkgs = nixpkgs.legacyPackages.${system};
+      in
+      {
         util = {
           writeZone = import ./util/writeZone.nix {
             inherit (self.lib) evalZone;

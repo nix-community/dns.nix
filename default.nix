@@ -19,11 +19,13 @@ rec {
       evalZone
       mkIPv4ReverseRecord
       mkIPv6ReverseRecord
+      mkIPv4ReverseRecord'
       types
       ;
 
     toString = name: zone: builtins.toString (dns.evalZone name zone);
-  } // dns.combinators;
+  }
+  // dns.combinators;
 
   util.writeZone = import ./util/writeZone.nix {
     inherit (lib) evalZone;
