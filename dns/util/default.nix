@@ -34,23 +34,24 @@ let
   mkIPv6RecordAux =
     v6:
     let
-      splitted' = lib.splitString "::" v6;
+      v6' =
+        if lib.hasPrefix "::" v6 then
+          "0${v6}"
+        else if lib.hasSuffix "::" v6 then
+          "${v6}0"
+        else
+          v6;
+      splitted = splitString ":" v6';
+      missing_count = 8 - builtins.length (lib.filter (x: x != "") splitted);
 
-      splitted = map (
-        part:
-        lib.pipe part [
-          (lib.splitString ":")
-          (map (lib.fixedWidthString 4 "0"))
-        ]
-      ) splitted';
-
-      zero_part =
-        let
-          missing_count = 8 - (lib.foldl' (acc: part: acc + builtins.length part) 0 splitted);
-        in
-        lib.fixedWidthString (4 * missing_count) "0" "";
+      # : int -> str -> str
+      # Expands "" to 4n zeros and aligns the rest on 4 bytes
+      pad_to_hex_or_expand = n: v: if v == "" then (lib.fixedWidthString (4 * n) "0" "") else lib.fixedWidthString 4 "0" v;
     in
-    lib.take 32 (lib.concatMap lib.stringToCharacters (builtins.head splitted ++ [ zero_part ] ++ lib.last splitted));
+    lib.pipe splitted [
+      (lib.concatMapStrings (pad_to_hex_or_expand missing_count))
+      lib.stringToCharacters
+    ];
 
   # : str -> str
   # Returns the reversed record of the ipv6
