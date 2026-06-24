@@ -29,33 +29,39 @@ let
   writeCharacterString =
     s: if stringLength s <= 255 then ''"${s}"'' else concatMapStringsSep " " (x: ''"${x}"'') (splitInGroupsOf 255 s);
 
-  # : str -> str, with length 4 (zeros are padded to the left)
-  align4Bytes = lib.fixedWidthString 4 "0";
-
-  # : int -> str -> str
-  # Expands "" to 4n zeros and aligns the rest on 4 bytes
-  align4BytesOrExpand = n: v: if v == "" then (lib.fixedWidthString (4 * n) "0" "") else align4Bytes v;
-
   # : str -> [ str ]
   # Returns the record of the ipv6 as a list
   mkIPv6RecordAux =
     v6:
     let
-      v6' =
-        if lib.hasPrefix "::" v6 then
-          "0${v6}"
-        else if lib.hasSuffix "::" v6 then
-          "${v6}0"
-        else
-          v6;
-      splitted = splitString ":" v6';
-      n = 8 - builtins.length (lib.filter (x: x != "") splitted);
+      splitted' = lib.splitString "::" v6;
+
+      splitted = map (
+        part:
+        lib.pipe part [
+          (lib.splitString ":")
+          (map (lib.fixedWidthString 4 "0"))
+        ]
+      ) splitted';
+
+      zero_part =
+        let
+          missing_count = 8 - (lib.foldl' (acc: part: acc + builtins.length part) 0 splitted);
+        in
+        lib.fixedWidthString (4 * missing_count) "0" "";
     in
-    lib.stringToCharacters (lib.concatMapStrings (align4BytesOrExpand n) splitted);
+    lib.take 32 (lib.concatMap lib.stringToCharacters (builtins.head splitted ++ [ zero_part ] ++ lib.last splitted));
 
   # : str -> str
   # Returns the reversed record of the ipv6
-  mkIPv6ReverseRecord = v6: concatStringsSep "." (reverseList (mkIPv6RecordAux v6)) + ".ip6.arpa";
+  mkIPv6ReverseRecord =
+    v6:
+    lib.pipe v6 [
+      mkIPv6RecordAux
+      reverseList
+      (concatStringsSep ".")
+      (s: s + ".ip6.arpa")
+    ];
 
   # : [ str ] -> str
   # Reverse the list then concat with sep "."
