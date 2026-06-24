@@ -18,8 +18,9 @@ rec {
       combinators
       evalZone
       mkIPv4ReverseRecord
-      mkIPv6ReverseRecord
       mkIPv4ReverseRecord'
+      mkIPv6ReverseRecord
+      mkIPv6ReverseRecord'
       types
       ;
 

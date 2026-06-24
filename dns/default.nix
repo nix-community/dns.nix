@@ -47,5 +47,10 @@ in
 
   inherit combinators;
 
-  inherit (dnslib.util) mkIPv4ReverseRecord mkIPv4ReverseRecord' mkIPv6ReverseRecord;
+  inherit (dnslib.util)
+    mkIPv4ReverseRecord
+    mkIPv4ReverseRecord'
+    mkIPv6ReverseRecord
+    mkIPv6ReverseRecord'
+    ;
 }

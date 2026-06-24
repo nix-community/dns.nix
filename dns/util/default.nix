@@ -29,6 +29,10 @@ let
   writeCharacterString =
     s: if stringLength s <= 255 then ''"${s}"'' else concatMapStringsSep " " (x: ''"${x}"'') (splitInGroupsOf 255 s);
 
+  # : [ str ] -> str
+  # Reverse the list then concat with sep "."
+  reverse_concat = octets_or_hexes: concatStringsSep "." (reverseList octets_or_hexes);
+
   # : str -> [ str ]
   # Returns the record of the ipv6 as a list
   mkIPv6RecordAux =
@@ -64,9 +68,17 @@ let
       (s: s + ".ip6.arpa")
     ];
 
-  # : [ str ] -> str
-  # Reverse the list then concat with sep "."
-  reverse_concat_octets = octets: concatStringsSep "." (reverseList octets);
+  # : str -> str
+  # Returns the reversed origin prefix and host hexes
+  mkIPv6ReverseRecord' =
+    depth: v6:
+    let
+      hexes = mkIPv6RecordAux v6;
+    in
+    [
+      (reverse_concat (lib.drop depth hexes))
+      (reverse_concat (lib.take depth hexes))
+    ];
 
   # : str -> str
   # Returns the reversed record of the ipv4
@@ -74,7 +86,7 @@ let
     v4:
     lib.pipe v4 [
       (splitString ".")
-      reverse_concat_octets
+      reverse_concat
       (s: s + ".in-addr.arpa")
     ];
 
@@ -83,11 +95,11 @@ let
   mkIPv4ReverseRecord' =
     depth: v4:
     let
-      reverse_octets = splitString "." v4;
+      octets = splitString "." v4;
     in
     [
-      (reverse_concat_octets (lib.drop depth reverse_octets)) # host octets
-      (reverse_concat_octets (lib.take depth reverse_octets)) # prefix
+      (reverse_concat (lib.drop depth octets)) # host hexes
+      (reverse_concat (lib.take depth octets)) # prefix
     ];
 in
 {
@@ -96,5 +108,6 @@ in
     mkIPv4ReverseRecord
     mkIPv4ReverseRecord'
     mkIPv6ReverseRecord
+    mkIPv6ReverseRecord'
     ;
 }

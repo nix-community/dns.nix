@@ -26,7 +26,12 @@
         inherit (dns) evalZone;
         inherit (dns) combinators;
         inherit (dns) types;
-        inherit (dns) mkIPv4ReverseRecord mkIPv4ReverseRecord' mkIPv6ReverseRecord;
+        inherit (dns)
+          mkIPv4ReverseRecord
+          mkIPv4ReverseRecord'
+          mkIPv6ReverseRecord
+          mkIPv6ReverseRecord'
+          ;
         toString = name: zone: builtins.toString (dns.evalZone name zone);
       }
       // dns.combinators;
