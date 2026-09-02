@@ -50,7 +50,10 @@ in
     };
   };
   dataToString = data: with data;
-    "${toString priority} ${toString weight} ${toString port} ${target}";
+    let
+      targetHost = if lib.hasSuffix "." target then target else "${target}.";
+    in
+    "${toString priority} ${toString weight} ${toString port} ${targetHost}";
   nameFixup = name: self:
     "_${self.service}._${self.proto}.${name}";
 }
