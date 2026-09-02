@@ -16,6 +16,7 @@ let
     "CNAME"
     "DNAME"
     "MX"
+    "NAPTR"
     "NS"
     "SOA"
     "SRV"
