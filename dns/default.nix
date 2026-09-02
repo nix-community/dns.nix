@@ -9,7 +9,7 @@
 let
   dnslib = {
     util = import ./util { inherit lib; };
-    inherit types;
+    inherit types combinators;
   };
   types = import ./types { lib = lib'; };
   lib' = lib // { dns = dnslib; };

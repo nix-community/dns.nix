@@ -42,6 +42,7 @@ let
 
   subzone = types.submodule {
     options = subzoneOptions;
+    config._module.args = { inherit (lib) dns; };
   };
 
   writeSubzone = name: zone:
@@ -84,6 +85,7 @@ let
     } // subzoneOptions;
 
     config = {
+      _module.args = { inherit (lib) dns; };
       __toString = zone@{ useOrigin, TTL, SOA, ... }:
         if useOrigin then
           ''
