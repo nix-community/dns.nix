@@ -31,7 +31,7 @@ let
 
   # : [ str ] -> str
   # Reverse the list then concat with sep "."
-  reverse_concat = octets_or_hexes: concatStringsSep "." (reverseList octets_or_hexes);
+  reverseConcat = octetsOrHexes: concatStringsSep "." (reverseList octetsOrHexes);
 
   # : str -> [ str ]
   # Returns the record of the ipv6 as a list
@@ -46,14 +46,14 @@ let
         else
           v6;
       splitted = splitString ":" v6';
-      missing_count = 8 - builtins.length (lib.filter (x: x != "") splitted);
+      missingCount = 8 - builtins.length (lib.filter (x: x != "") splitted);
 
       # : int -> str -> str
       # Expands "" to 4n zeros and aligns the rest on 4 bytes
-      pad_to_hex_or_expand = n: v: if v == "" then (lib.fixedWidthString (4 * n) "0" "") else lib.fixedWidthString 4 "0" v;
+      padToHexOrExpand = n: v: if v == "" then (lib.fixedWidthString (4 * n) "0" "") else lib.fixedWidthString 4 "0" v;
     in
     lib.pipe splitted [
-      (lib.concatMapStrings (pad_to_hex_or_expand missing_count))
+      (lib.concatMapStrings (padToHexOrExpand missingCount))
       lib.stringToCharacters
     ];
 
@@ -68,16 +68,18 @@ let
       (s: s + ".ip6.arpa")
     ];
 
-  # : str -> str
-  # Returns the reversed origin prefix and host hexes
+  # : int -> str -> [ str str ]
+  # Returns [ host zone ]: the reversed host part and the reverse zone for the
+  # first depth nibbles (1 <= depth < 32; for the full name use
+  # mkIPv6ReverseRecord)
   mkIPv6ReverseRecord' =
     depth: v6:
     let
       hexes = mkIPv6RecordAux v6;
     in
     [
-      (reverse_concat (lib.drop depth hexes))
-      (reverse_concat (lib.take depth hexes))
+      (reverseConcat (lib.drop depth hexes))
+      "${reverseConcat (lib.take depth hexes)}.ip6.arpa"
     ];
 
   # : str -> str
@@ -86,20 +88,22 @@ let
     v4:
     lib.pipe v4 [
       (splitString ".")
-      reverse_concat
+      reverseConcat
       (s: s + ".in-addr.arpa")
     ];
 
-  # : str -> [ str str]
-  # Returns the reversed origin prefix and host octets
+  # : int -> str -> [ str str ]
+  # Returns [ host zone ]: the reversed host part and the reverse zone for the
+  # first depth octets (1 <= depth < 4; for the full name use
+  # mkIPv4ReverseRecord)
   mkIPv4ReverseRecord' =
     depth: v4:
     let
       octets = splitString "." v4;
     in
     [
-      (reverse_concat (lib.drop depth octets)) # host hexes
-      (reverse_concat (lib.take depth octets)) # prefix
+      (reverseConcat (lib.drop depth octets))
+      "${reverseConcat (lib.take depth octets)}.in-addr.arpa"
     ];
 in
 {
